@@ -1,0 +1,24 @@
+{
+  "name": "custom_string_patterns",
+  "version": "0.1.0",
+  "description": "Generate random and incrementing string patterns using regex and custom functions",
+  "main": "patterns.ts",
+  "repository": "https://github.com/CarlosNZ/custom_string_patterns.git",
+  "author": "Carl Smith <5456533+CarlosNZ@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "randexp": "^0.5.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "dev": "ts-node ./src/dev.ts"
+  }
+}
