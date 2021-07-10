@@ -9,70 +9,72 @@ function* simpleCounter(init: number) {
   }
 }
 
+// Wrap counter generator in function so getCounter just returns the value, not the whole iterator object
+const simpleCounterWrapper = (counter: Generator) => () => counter.next().value
+
 class PatternGenerator {
+  simpleCounter: Generator
   pattern: string | RegExp
-  setCounter: Function
   getCounter: Function
+  setCounter: Function | null
   private static randexp: RandExp
   counterIncrement: (input: string | number) => string | number
   internalCounter: number
-  shouldWaitForCounter: boolean
+  numberFormat: Intl.NumberFormat
+  // shouldWaitForCounter: boolean
   customReplacers: { [key: string]: Function }
 
   constructor(
     pattern: string | RegExp,
     {
-      setCounter,
       getCounter,
+      setCounter,
       counterIncrement = defaultIncrement,
       counterInit = 1,
-      shouldWaitForCounter = false,
+      // shouldWaitForCounter = false,
       customReplacers = {},
+      numberFormat,
     }: any
   ) {
-    this.setCounter = setCounter ?? function () {}
-    this.getCounter = getCounter ?? function () {}
+    this.simpleCounter = simpleCounter(counterInit)
+    this.getCounter = getCounter ?? simpleCounterWrapper(this.simpleCounter)
+    this.setCounter = setCounter ?? null
     this.pattern = pattern
     this.counterIncrement = counterIncrement
     this.internalCounter = counterInit
-    this.shouldWaitForCounter = shouldWaitForCounter
+    // this.shouldWaitForCounter = shouldWaitForCounter
+    this.numberFormat = new Intl.NumberFormat(numberFormat)
     this.customReplacers = customReplacers
   }
   // generate new string
   async gen(shouldIncrement = true) {
-    const randexpPattern = await generateRandExpPattern(
-      this.pattern,
-      this.getCounter,
-      this.setCounter,
-      this.counterIncrement,
-      this.shouldWaitForCounter,
-      this.customReplacers,
-      shouldIncrement
-    )
-  }
-}
-
-const generateRandExpPattern = async (
-  pattern: string | RegExp,
-  getCounter: Function,
-  setCounter: Function,
-  increment: Function,
-  shouldWaitForCounter: boolean,
-  customReplacers: { [key: string]: Function },
-  shouldIncrement: boolean
-) => {
-  const patternRegex: RegExp = typeof pattern === 'string' ? new RegExp(pattern) : pattern
-  const source = patternRegex.source
-  const matches = Array.from(source.matchAll(new RegExp('<(.+?)>', 'g')))
-  for (const match of matches) {
-    console.log(match)
-    if (match[1][0] === '+') {
-      // Increment counter, format string, replace in source
-    } else if (match[1][0] === '?') {
-      console.log('Custom functions not implemented yet')
+    const patternRegex: RegExp =
+      typeof this.pattern === 'string' ? new RegExp(this.pattern) : this.pattern
+    const source = patternRegex.source
+    let randexpPattern = source
+    const matches = Array.from(source.matchAll(new RegExp('<(.+?)>', 'g')))
+    for (const match of matches) {
+      console.log(match)
+      if (match[1][0] === '+') {
+        const newCount = shouldIncrement ? await this.getCounter() : this.internalCounter
+        if (this.setCounter) await this.setCounter(this.counterIncrement(newCount))
+        const replacementCounter = replaceCount(match[1], newCount, this.numberFormat)
+        randexpPattern = randexpPattern.replace(match[0], replacementCounter)
+      } else if (match[1][0] === '?') {
+        // console.log('Custom functions not implemented yet')
+      }
     }
+    console.log(randexpPattern)
+    return 'randexpPattern'
   }
-  return 'NEW REGEX'
 }
 
 export default PatternGenerator
+
+const replaceCount = (
+  pattern: string,
+  count: number | string,
+  numberFormat: Intl.NumberFormat | undefined
+) => {
+  return numberFormat ? numberFormat.format(Number(count)) : String(count)
+}

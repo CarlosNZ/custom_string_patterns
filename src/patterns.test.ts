@@ -1,5 +1,3 @@
-import temp from "./patterns";
-
-test("Testing tests", () => {
-  expect(temp(10)).toBe(20);
-});
+// test("Testing tests", () => {
+//   expect(temp(10)).toBe(20);
+// });

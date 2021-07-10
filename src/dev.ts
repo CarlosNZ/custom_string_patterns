@@ -6,3 +6,14 @@ import Pattern from './patterns'
 const x = new Pattern(/something<+Incrementer>something<?Function>/g, {})
 
 x.gen()
+x.gen()
+x.gen()
+
+const y = new Pattern(/xxx xtreme dragon warrior <+number> xxx/i, { counterInit: 5 })
+
+console.log(y.gen())
+console.log(y.gen())
+console.log(y.gen())
+console.log(y.gen())
+console.log(y.gen())
+console.log(y.gen())
