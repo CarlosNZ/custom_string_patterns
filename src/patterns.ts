@@ -1,4 +1,6 @@
-import * as RandExp from 'randexp'
+import RandExp from 'randexp'
+import { replaceCount, replaceCustom } from './helpers'
+import { CustomReplacers, GenerateArgs } from './types'
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 
@@ -17,12 +19,10 @@ class PatternGenerator {
   pattern: string | RegExp
   getCounter: Function
   setCounter: Function | null
-  private static randexp: RandExp
   counterIncrement: (input: string | number) => string | number
   internalCounter: number
   numberFormat: Intl.NumberFormat
-  // shouldWaitForCounter: boolean
-  customReplacers: { [key: string]: Function }
+  customReplacers: CustomReplacers
 
   constructor(
     pattern: string | RegExp,
@@ -31,7 +31,6 @@ class PatternGenerator {
       setCounter,
       counterIncrement = defaultIncrement,
       counterInit = 1,
-      // shouldWaitForCounter = false,
       customReplacers = {},
       numberFormat,
     }: any
@@ -42,39 +41,45 @@ class PatternGenerator {
     this.pattern = pattern
     this.counterIncrement = counterIncrement
     this.internalCounter = counterInit
-    // this.shouldWaitForCounter = shouldWaitForCounter
-    this.numberFormat = new Intl.NumberFormat(numberFormat)
+    this.numberFormat = numberFormat
     this.customReplacers = customReplacers
   }
-  // generate new string
-  async gen(shouldIncrement = true) {
+  // Generate new string
+  async gen(args: GenerateArgs = {}) {
+    const { shouldIncrement = true, customArgs = {} } = args
+    // Increment counter
+    const newCount = shouldIncrement ? await this.getCounter() : this.internalCounter
+    this.internalCounter = newCount
+    if (this.setCounter) await this.setCounter(this.counterIncrement(newCount))
+
+    // Handle pattern
     const patternRegex: RegExp =
       typeof this.pattern === 'string' ? new RegExp(this.pattern) : this.pattern
-    const source = patternRegex.source
-    let randexpPattern = source
+    const { source, flags } = patternRegex
+    let newSource = source
     const matches = Array.from(source.matchAll(new RegExp('<(.+?)>', 'g')))
     for (const match of matches) {
-      console.log(match)
-      if (match[1][0] === '+') {
-        const newCount = shouldIncrement ? await this.getCounter() : this.internalCounter
-        if (this.setCounter) await this.setCounter(this.counterIncrement(newCount))
-        const replacementCounter = replaceCount(match[1], newCount, this.numberFormat)
-        randexpPattern = randexpPattern.replace(match[0], replacementCounter)
-      } else if (match[1][0] === '?') {
-        // console.log('Custom functions not implemented yet')
+      const fullMatchString = match[0]
+      const captureGroup = match[1]
+      const operator = captureGroup[0]
+      // Replace counters
+      if (operator === '+') {
+        const replacementCounter = replaceCount(captureGroup, newCount, this.numberFormat)
+        newSource = newSource.replace(fullMatchString, replacementCounter)
+      }
+      // Custom Replacers
+      else if (operator === '?') {
+        const replacementString = await replaceCustom(
+          captureGroup,
+          this.customReplacers,
+          customArgs
+        )
+        newSource = newSource.replace(fullMatchString, replacementString)
       }
     }
-    console.log(randexpPattern)
-    return 'randexpPattern'
+    const randexpPattern = new RegExp(newSource, flags)
+    return new RandExp(randexpPattern).gen()
   }
 }
 
 export default PatternGenerator
-
-const replaceCount = (
-  pattern: string,
-  count: number | string,
-  numberFormat: Intl.NumberFormat | undefined
-) => {
-  return numberFormat ? numberFormat.format(Number(count)) : String(count)
-}
