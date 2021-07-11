@@ -78,7 +78,7 @@ Ideally, your `getCounter` function should also take care of incrementing the co
 
 #### `setCounter: (newValue) => void`
 
-Only required if your `getCounter()` function does not also take care of incrementing the counter, you'll need to provide another function to update it. If `setCounter` exists, the Pattern Generator will call it with the new counter value (usually getCounter() + 1) as its argument. Note that you should only use seperate get/set counter functions in an isolated system -- if your counter resides on a database that is accessed by multiple clients, you should retrieve and increment the counter atomically, or you'll likely run into concurrency issues.
+Only required if your `getCounter()` function does not also take care of incrementing the counter, you'll need to provide another function to update it. If `setCounter` exists, the Pattern Generator will call it with the new counter value (usually `getCounter() + 1`) as its argument. Note that you should only use seperate get/set counter functions in an isolated system -- if your counter resides on a database that is accessed by multiple clients, you should retrieve and increment the counter atomically, or you'll likely run into concurrency issues.
 
 #### `counterIncrement ((input: string | number) => string | number)`
 
