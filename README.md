@@ -50,7 +50,7 @@ Counters and custom replacers are pre-processed (using the syntax [below](#custo
 
 Counters are placed into the pattern string by using `<+dd>`, where `d` represents a digit in the output string -- numbers will be padded with leading zeroes to match (at least) the length of the `ddd` sequence. i.e. `<+dddd>` with output number `55` yields `0055`
 
-More complex number formatting can be achieved using a `numberFormat` parameter in "options" (see below).
+More complex number formatting can be achieved using a `numberFormat` parameter in "options" (see [below](#numberformat--intlnumberformat)).
 
 #### Custom replacers
 
