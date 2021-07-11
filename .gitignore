@@ -105,4 +105,5 @@ dist
 
 # Build folder
 build
+lib
 .DS_Store

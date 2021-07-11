@@ -1,4 +1,4 @@
-import Pattern from './patterns'
+import Pattern, { patternGen } from './patterns'
 import { generatePlates } from './customCounters'
 
 const y = new Pattern(/xxx xtreme dragon warrior <+number> xxx/i, { counterInit: 5 })
@@ -42,12 +42,10 @@ const runP = async () => {
   }
 }
 
-// runP()
+runP()
 
 const getPlate = f(generatePlates('ZZQ100'))
-
 const plates = new Pattern('<+plate>', { getCounter: getPlate })
-
 const runPlates = async () => {
   for (let i = 1; i < 10000; i++) {
     const plate = await plates.gen()
@@ -56,4 +54,7 @@ const runPlates = async () => {
   }
 }
 
-runPlates()
+// runPlates()
+
+// Shorthand syntax when only used once
+// patternGen(/[A-Z]{3}-<+dddd>/).then((result) => console.log('OUTPUT', result))
