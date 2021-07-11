@@ -119,3 +119,14 @@ If `false`, the Pattern Generator will return a new string _without_ incrementin
 #### `customArgs: { { <funcName>: (args), ... } }`
 
 If your customReplacer functions take arguments, then you supply the arguments to the `.gen()` method here. `customArgs` is an object with the same structure as `customReplacers` ([above](#custom-replacers)), but instead of the values being functions, they are the arguments supplied to those functions.
+
+## Shorthand use
+
+If only one output string is required, you can generate it using the short-hand function instead of constructing and calling `.gen()` on a Pattern object:
+
+```js
+import { patternGen } from 'custom-string-patterns'
+
+console.log(await patternGen(/[A-Z]{3}-<+dddd>/), { getCounter })
+// => PAL-005
+```
