@@ -4,7 +4,7 @@ Generate random and incrementing string patterns using regex and custom function
 
 **custom_string_patterns** is based on [randexp](https://github.com/fent/randexp.js) -- a package to generate random strings that match given regular expressions. custom_string_patterns takes it a step further by providing a mechanism for string patterns to contain incrementing values and custom replacement functions beyond what regex can do.
 
-## Usage
+## Usage examples
 
 ```js
 import Pattern from 'custom-string-patterns'
@@ -34,7 +34,7 @@ console.log(await extCounter.gen({ customArgs: { double: -2 } }))
 // => COUNT: 124 | DOUBLED: -4
 ```
 
-## API
+## Parameters and Methods
 
 A new pattern object is constructed with `new Pattern ( pattern, options )`
 
