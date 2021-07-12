@@ -16,8 +16,6 @@ const showBasicPattern = async () => {
   }
 }
 
-showBasicPattern()
-
 // Function to fetch an item from an online API
 const getAlbumString = async (key: number) => {
   const data = await fetch('https://jsonplaceholder.typicode.com/albums')
@@ -38,7 +36,7 @@ const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(
 
 const showFancyPattern = async () => {
   console.log(
-    'A more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
+    '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
   )
   for (let i = 1; i < 20; i++) {
     console.log(
@@ -52,85 +50,26 @@ const showFancyPattern = async () => {
   }
 }
 
-showFancyPattern()
-
-// test('Generate single string - fancyPattern', () => {
-//   return fancyPattern
-//     .gen({
-//       customArgs: {
-//         album: 10,
-//         upper: '_end',
-//       },
-//     })
-//     .then((result: string) => {
-//       expect(result).toMatch(
-//         /^Album name: quam nostrum impedit mollitia quod et dolor, serial: [A-Z]{3}_5,000 \(_END\)$/
-//       )
-//     })
-// })
-
-// test('Generate 3 more', () => {
-//   for (let i = 1; i < 3; i++) {
-//     fancyPattern.gen({
-//       customArgs: {
-//         album: i * 4,
-//         upper: 'anyTHING',
-//       },
-//     })
-//   }
-//   return fancyPattern
-//     .gen({
-//       customArgs: {
-//         album: 20,
-//         upper: '--done!',
-//       },
-//     })
-//     .then((result: string) => {
-//       expect(result).toMatch(
-//         /^Album name: repudiandae voluptatem optio est consequatur rem in temporibus et, serial: [A-Z]{3}_5,300 \(--DONE!\)$/
-//       )
-//     })
-// })
-
-// // ^ Can't use Shorthand pattern as it doesn't handle customArgs
-
 // // NZ Number plate generator:
-// const plates = generatePlates()
+const plates = generatePlates()
+const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
+  getCounter: () => plates.next(),
+})
 
-// // Pattern with non-numerical "counter", used twice in a string
-// const platePattern = new Pattern('<+>_<+ddd>', { getCounter: () => plates.next() })
+const showPlates = async () => {
+  console.log('\n\nGenerate NZ-style car number plates in sequence')
+  for (let i = 1; i < 20; i++) {
+    console.log(await platePattern.gen())
+  }
+}
 
-// test('Generate a double NZ number plate string', () => {
-//   return platePattern.gen().then((result: string) => {
-//     expect(result).toMatch(/^AAA100_AAA100$/)
-//   })
-// })
+const run = async () => {
+  await showBasicPattern()
+  await showFancyPattern()
+  await showPlates()
+}
 
-// test('Generate 10 more plates', () => {
-//   for (let i = 1; i < 10; i++) {
-//     platePattern.gen()
-//   }
-//   return platePattern.gen().then((result: string) => {
-//     expect(result).toMatch(/^AAA110_AAA110$/)
-//   })
-// })
-
-// test('Return same result without incrementing', () => {
-//   return platePattern.gen({ shouldIncrement: false }).then((result: string) => {
-//     expect(result).toMatch(/^AAA110_AAA110$/)
-//   })
-// })
-
-// // Shorthand version, with a new plate generator
-// const plates2 = generatePlates('MZZ998')
-// patternGen('<+>_<+ddd>', { getCounter: () => plates2.next() })
-// patternGen('<+>_<+ddd>', { getCounter: () => plates2.next() })
-// patternGen('<+>_<+ddd>', { getCounter: () => plates2.next() })
-// test('Shorthand version of platePattern', () => {
-//   return patternGen('<+>_<+ddd>', { getCounter: () => plates2.next() }).then((result: string) => {
-//     expect(result).toMatch(/^NAA101_NAA101$/)
-//   })
-// })
+run()
 
 // // A non-generator counter with seperate .getCounter() and .setCounter() methods
 // const makeDumbCounter = (init: number) => ({
