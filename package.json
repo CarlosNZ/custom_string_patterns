@@ -1,6 +1,6 @@
 {
   "name": "custom_string_patterns",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Generate random and incrementing string patterns using regex and custom functions",
   "main": "build/patterns.js",
   "types": "build/patterns.d.ts",
