@@ -4,6 +4,9 @@
   "description": "Generate random and incrementing string patterns using regex and custom functions",
   "main": "build/patterns.js",
   "types": "build/patterns.d.ts",
+  "files": [
+    "build/**/*"
+  ],
   "repository": "https://github.com/CarlosNZ/custom_string_patterns.git",
   "author": "Carl Smith <5456533+CarlosNZ@users.noreply.github.com>",
   "license": "MIT",
