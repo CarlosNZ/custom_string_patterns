@@ -68,11 +68,11 @@ In this case, the pre-processor would look for a key named "func" in customRepla
 }
 ```
 
-#### `getCounter: () => number | string`
+#### `getCounter: () => number | string ( | IteratorYieldResult)`
 
 You can provide your own "Counter" function. By default, the Pattern Generator uses a simple internal counter, but it is re-initialised with each new instance of the generator, and there is no data persistence. If you require this (e.g. for a system that is generating ongoing serial numbers), you will need to provide a function to retrieve the current count value from your database or API.
 
-This function takes no parameters and should return either a number or a string. Note, the "counter" doesn't have to be numerical -- you could have a system that generates a sequence of "AAA, AAB, AAC, etc...". As long as calling this function returns the appropriate value in the sequence, it's fine to use.
+This function takes no parameters and should return either a number or a string. (The exception to this is, when using a Generator function to yield the counter output, you can just return the `IteratorYieldResult` directly, rather than having to wrap your Generator in a seperate function just to extract the `.value` property.) Note, the "counter" doesn't have to be numerical -- you could have a system that generates a sequence of "AAA, AAB, AAC, etc...". As long as calling this function returns the appropriate value in the sequence, it's fine to use.
 
 Ideally, your `getCounter` function should also take care of incrementing the counter, so it can be called time after time and returns a new value each time. However, if this is not possible (i.e. it can only read a value), then you'll also have to provide a seperate function to update the value:
 

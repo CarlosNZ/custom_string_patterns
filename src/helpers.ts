@@ -24,3 +24,11 @@ export const replaceCustom = async (
 
 export const escapeLiterals = (value: string) =>
   value.replace(/(\.|\+|\*|\?|\^|\$|\(|\)|\[|\]|\{|\}|\||\\)/g, '\\$1')
+
+// Allows a generator to be used as a counter directly, rather than needing to
+// be wrapped in another function
+export const parseGeneratorOutput = (counterOutput: string | number | IteratorYieldResult<any>) => {
+  if (typeof counterOutput === 'number' || typeof counterOutput === 'string') return counterOutput
+  if (counterOutput?.value) return counterOutput.value
+  throw new Error('Invalid counter function, or Generator has reached limit')
+}

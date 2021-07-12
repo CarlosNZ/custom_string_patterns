@@ -26,6 +26,7 @@
     "test": "jest",
     "build": "rimraf ./build && tsc",
     "dev": "ts-node ./src/dev.ts",
+    "demo": "ts-node ./src/demo.ts",
     "prepublishOnly": "yarn build"
   },
   "keywords": [

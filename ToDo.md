@@ -1,4 +1,4 @@
 ## To-Do list
 
-- [ ] Handle `getCounter` generators that return a { value, done } object (convert to just value)
-- [ ] Write tests
+- [x] Handle `getCounter` generators that return a { value, done } object (convert to just value)
+- [x] Write tests

@@ -5,6 +5,7 @@ Sequential Generator to return NZ-style registration plates
 export function* generatePlates(init: string = 'AAA100') {
   if (!init.match(/[A-Z]{3}[1-9][0-9]{2}/)) throw new Error('Incorrect registration plate format')
   let plate = init
+  yield plate // First one before loop
   while (plate !== 'ZZZ999') {
     const letters = plate.slice(0, 3)
     const number = Number(plate.slice(3, 6))
