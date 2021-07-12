@@ -104,7 +104,7 @@ which would render the counter value as a Japanese yen (￥) string.
 
 ### Generating a new string -- the `.gen()` method
 
-Call the `.gen()` method on the Pattern object to return a new string -- see examples in [Usage](#Usage) above.
+Call the `.gen()` method on the Pattern object to return a new string -- see examples in [Usage](#usage-examples) above.
 
 Note that `.gen()` is Async, since it's expected that many of the custom functions used by the Pattern Generator (e.g. `getCounter`, customReplacers, etc) are likely to be asynchronous functions.
 
