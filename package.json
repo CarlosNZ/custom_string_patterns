@@ -15,7 +15,9 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
+    "@types/node-fetch": "^2.5.11",
     "jest": "^27.0.6",
+    "node-fetch": "^2.6.1",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.5"
@@ -32,6 +34,7 @@
     "regex",
     "regular expressions",
     "patterns",
-    "random"
+    "random",
+    "randexp"
   ]
 }

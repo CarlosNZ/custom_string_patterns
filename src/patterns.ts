@@ -4,10 +4,11 @@ import { CustomReplacers, GenerateArgs, PatternGeneratorOptions } from './types'
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 
-function* simpleCounter(init: number) {
+function* simpleCounter(init: number, increment: Function) {
   let count = init
   while (true) {
-    yield count++
+    yield count
+    count = increment(count)
   }
 }
 
@@ -40,7 +41,7 @@ class PatternGenerator {
       numberFormat,
     }: PatternGeneratorOptions = {}
   ) {
-    this.simpleCounter = simpleCounter(counterInit)
+    this.simpleCounter = simpleCounter(counterInit, counterIncrement)
     this.getCounter = getCounter ?? generatorWrapper(this.simpleCounter)
     this.setCounter = setCounter ?? null
     this.pattern = pattern
