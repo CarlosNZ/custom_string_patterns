@@ -245,3 +245,21 @@ test('Shorthand verion of Timestamp replacer', () => {
     expect(result).toMatch(/[A-z0-9!@#$%^&]{8}-\d{10}/)
   })
 })
+
+// Generate random credit card numbers, including correct check digit
+
+const calculateCheckDigit = (args: any) => {
+  // Implement Luhn algorithm
+  return '3'
+}
+
+const visaCardPattern = new Pattern(
+  /(4[0-9]{3}) ([0-9]{4}) ([0-9]{4}) ([0-9]{3})<?checkdigit($1, $2, $3)>/,
+  {
+    customReplacers: {
+      checkdigit: calculateCheckDigit,
+    },
+  }
+)
+
+// Not implemented yet
