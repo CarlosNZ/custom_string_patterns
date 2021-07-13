@@ -19,3 +19,20 @@ export interface PatternGeneratorOptions {
   customReplacers?: CustomReplacers
   numberFormat?: Intl.NumberFormat
 }
+
+type FunctionReplacement = {
+  type: 'function'
+  funcName: string
+  args?: any
+  length?: number
+}
+
+type CounterReplacement = {
+  type: 'counter'
+  length: number
+  funcName?: number
+  args?: any
+}
+export interface SubstitutionMap {
+  [key: string]: FunctionReplacement | CounterReplacement
+}

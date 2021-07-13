@@ -895,6 +895,11 @@ char-regex@^1.0.2:
   resolved "https://registry.yarnpkg.com/char-regex/-/char-regex-1.0.2.tgz#d744358226217f981ed58f479b1d6bcc29545dcf"
   integrity sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==
 
+checkdigit@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/checkdigit/-/checkdigit-1.1.1.tgz#08df08de493a3eaa3fa9183e5864b27beef96687"
+  integrity sha1-CN8I3kk6Pqo/qRg+WGSye+75Zoc=
+
 ci-info@^3.1.1:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-3.2.0.tgz#2876cb948a498797b5236f0095bc057d0dca38b6"

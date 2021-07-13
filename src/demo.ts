@@ -1,6 +1,7 @@
-import Pattern, { patternGen } from './patterns'
+import Pattern from './patterns'
 import fetch from 'node-fetch'
 import { generatePlates } from './customCounters'
+const checkdigit = require('checkdigit')
 
 // Basic pattern generator, using internal counters and no customReplacers
 
@@ -38,7 +39,7 @@ const showFancyPattern = async () => {
   console.log(
     '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
   )
-  for (let i = 1; i < 20; i++) {
+  for (let i = 1; i < 5; i++) {
     console.log(
       await fancyPattern.gen({
         customArgs: {
@@ -50,7 +51,7 @@ const showFancyPattern = async () => {
   }
 }
 
-// // NZ Number plate generator:
+// NZ Number plate generator:
 const plates = generatePlates()
 const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
   getCounter: () => plates.next(),
@@ -63,13 +64,47 @@ const showPlates = async () => {
   }
 }
 
-const run = async () => {
+// Generate credit card numbers with valid checksum
+const generateChecksum = (digits: string[]) =>
+  checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
+
+const cardTypeLookup = (initDigits: string) => {
+  const startDigitReference: any = {
+    4: 'Visa',
+    5: 'Mastercard',
+  }
+  return startDigitReference[initDigits.slice(0, 1)]
+}
+
+const creditCardGenerator = new Pattern(
+  /(4[0-9]|51|52|53|54|55)([0-9]{2}) ([0-9]{4} [0-9]{4} [0-9]{3})<?checksum(1, 2, 3)> \(<?whichCard(1)>\)/,
+  {
+    customReplacers: {
+      checksum: (...args: string[]) => generateChecksum(args),
+      whichCard: cardTypeLookup,
+    },
+  }
+)
+
+const generateCreditCardNums = async () => {
+  console.log('\n\nRandom credit card numbers with valid checksums')
+  for (let i = 1; i < 20; i++) {
+    console.log(await creditCardGenerator.gen())
+  }
+  console.log(
+    'Check validity at: https://www.freeformatter.com/credit-card-number-generator-validator.html'
+  )
+}
+
+export const runDemo = async () => {
+  console.log('See source code in demo.ts and patterns.test.ts for detailed usage examples\n\n')
   await showBasicPattern()
   await showFancyPattern()
   await showPlates()
+  await generateCreditCardNums()
 }
 
-run()
+runDemo()
 
 // // A non-generator counter with seperate .getCounter() and .setCounter() methods
 // const makeDumbCounter = (init: number) => ({

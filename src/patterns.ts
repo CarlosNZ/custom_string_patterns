@@ -1,6 +1,8 @@
 import RandExp from 'randexp'
-import { replaceCount, replaceCustom, parseGeneratorOutput } from './helpers'
-import { CustomReplacers, GenerateArgs, PatternGeneratorOptions } from './types'
+import { formatCounter, getArgs, parseGeneratorOutput, processInputPattern } from './helpers'
+import { CustomReplacers, CustomArgs, PatternGeneratorOptions, SubstitutionMap } from './types'
+import { runDemo } from './demo'
+export { runDemo }
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 
@@ -20,6 +22,9 @@ export const patternGen = (pattern: string | RegExp, options: PatternGeneratorOp
 class PatternGenerator {
   simpleCounter: Generator
   pattern: string | RegExp
+  randexpObject: RandExp
+  substitutionMap: SubstitutionMap
+  randexpPattern: string
   getCounter: Function
   setCounter: Function | null
   counterIncrement: (input: string | number) => string | number
@@ -42,14 +47,19 @@ class PatternGenerator {
     this.getCounter = getCounter ?? (() => this.simpleCounter.next())
     this.setCounter = setCounter ?? null
     this.pattern = pattern
+    const { randexpObject, substitionMap, randexpPattern } = processInputPattern(pattern)
+    this.randexpObject = randexpObject
+    this.substitutionMap = substitionMap
+    this.randexpPattern = randexpPattern
     this.counterIncrement = counterIncrement
     this.internalCounter = counterInit
     this.numberFormat = numberFormat
     this.customReplacers = customReplacers
   }
   // Generate new string
-  async gen(args: GenerateArgs = {}) {
+  async gen(args: CustomArgs = {}) {
     const { shouldIncrement = true, customArgs = {} } = args
+
     // Increment counter
     const newCount = shouldIncrement
       ? parseGeneratorOutput(await this.getCounter())
@@ -57,33 +67,38 @@ class PatternGenerator {
     this.internalCounter = newCount
     if (this.setCounter) await this.setCounter(await this.counterIncrement(newCount))
 
-    // Handle pattern
-    const patternRegex: RegExp =
-      typeof this.pattern === 'string' ? new RegExp(this.pattern) : this.pattern
-    const { source, flags } = patternRegex
-    let newSource = source
-    const matches = Array.from(source.matchAll(new RegExp('<(.+?)>', 'g')))
-    for (const match of matches) {
-      const fullMatchString = match[0]
-      const captureGroup = match[1]
-      const operator = captureGroup[0]
-      // Replace counters
-      if (operator === '+') {
-        const replacementCounter = replaceCount(captureGroup, newCount, this.numberFormat)
-        newSource = newSource.replace(fullMatchString, replacementCounter)
-      }
-      // Custom Replacers
-      else if (operator === '?') {
-        const replacementString = await replaceCustom(
-          captureGroup,
-          this.customReplacers,
-          customArgs
-        )
-        newSource = newSource.replace(fullMatchString, replacementString)
-      }
-    }
-    const randexpPattern = new RegExp(newSource, flags)
-    return new RandExp(randexpPattern).gen()
+    // Create randexp string (with substitutions)
+    const generatedRandexString = this.randexpObject.gen()
+    const captureGroupMatches =
+      generatedRandexString.match(new RegExp(this.randexpPattern))?.slice(1) ?? []
+
+    let outputString = generatedRandexString
+
+    // Replace counters
+    const counters = Object.entries(this.substitutionMap).filter((c) => c[1].type === 'counter')
+    counters.forEach(([index, counter]) => {
+      const formattedCounter = formatCounter({
+        value: this.internalCounter,
+        numberFormat: this.numberFormat,
+        length: counter?.length || 0,
+      })
+      outputString = outputString.replace(`<${index}>`, formattedCounter)
+    })
+
+    // Replace functions
+    const functions = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'function')
+    const functionResultPromises = functions.map(([index, f]) => {
+      const funcName = f?.funcName
+      const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches)
+      if (!funcName) throw new Error('Missing Function name')
+      return this.customReplacers[funcName](...args)
+    })
+    const functionResults = await Promise.all(functionResultPromises) // for async functions
+    functions.forEach(([index, func], i) => {
+      outputString = outputString.replace(`<${index}>`, functionResults[i])
+    })
+
+    return outputString
   }
 }
 
