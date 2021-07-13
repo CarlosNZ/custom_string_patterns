@@ -89,13 +89,13 @@ class PatternGenerator {
     })
 
     // Replace functions
-    const functionResults = functions.map(([index, f]) => {
+    const functionPromises = functions.map(([index, f]) => {
       const funcName = f?.funcName
       const args = getArgs(index, funcName as string, f?.args, customArgs, captureGroupMatches)
       if (!funcName) throw new Error('Missing Function name')
       return this.customReplacers[funcName](args)
     })
-    await Promise.all(functionResults) // for async functions
+    const functionResults = await Promise.all(functionPromises) // for async functions
     functions.forEach(([index, func], i) => {
       outputString = outputString.replace(`<${index}>`, functionResults[i])
     })
