@@ -1,4 +1,4 @@
-import Pattern, { patternGen } from './patterns'
+import Pattern from './patterns'
 import fetch from 'node-fetch'
 import { generatePlates } from './customCounters'
 const checkdigit = require('checkdigit')
@@ -39,7 +39,7 @@ const showFancyPattern = async () => {
   console.log(
     '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
   )
-  for (let i = 1; i < 20; i++) {
+  for (let i = 1; i < 5; i++) {
     console.log(
       await fancyPattern.gen({
         customArgs: {
@@ -97,6 +97,7 @@ const generateCreditCardNums = async () => {
 }
 
 export const runDemo = async () => {
+  console.log('See source code in demo.ts and patterns.test.ts for detailed usage examples\n\n')
   await showBasicPattern()
   await showFancyPattern()
   await showPlates()
