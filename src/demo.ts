@@ -1,91 +1,109 @@
 import Pattern, { patternGen } from './patterns'
 import fetch from 'node-fetch'
 import { generatePlates } from './customCounters'
+const checkdigit = require('checkdigit')
 
 // Basic pattern generator, using internal counters and no customReplacers
 
-// const basicPattern = new Pattern(/[A-Za-z]{4,9}-<+ddd>/)
-// // Between 1 and 9 alphabet chars, followed by - and a number padded with leading 0s to 3 digits
+const basicPattern = new Pattern(/[A-Za-z]{4,9}-<+ddd>/)
+// Between 1 and 9 alphabet chars, followed by - and a number padded with leading 0s to 3 digits
 
-// const showBasicPattern = async () => {
-//   console.log(
-//     'Basic pattern -- between 1-9 random alphabet chars, followed by an incrementing number padded with 0s, seperated by hyphen:'
-//   )
-//   for (let i = 1; i < 20; i++) {
-//     console.log(await basicPattern.gen())
-//   }
-// }
-
-// // Function to fetch an item from an online API
-// const getAlbumString = async (key: number) => {
-//   const data = await fetch('https://jsonplaceholder.typicode.com/albums')
-//   return (await data.json())[key].title
-// }
-
-// // More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
-
-// const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
-//   counterInit: 5000,
-//   counterIncrement: (prev) => Number(prev) + 100,
-//   customReplacers: {
-//     album: getAlbumString,
-//     upper: (str: string) => str.toUpperCase(),
-//   },
-//   numberFormat: new Intl.NumberFormat('en-US'),
-// })
-
-// const showFancyPattern = async () => {
-//   console.log(
-//     '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
-//   )
-//   for (let i = 1; i < 20; i++) {
-//     console.log(
-//       await fancyPattern.gen({
-//         customArgs: {
-//           album: i,
-//           upper: String.fromCharCode(i + 65),
-//         },
-//       })
-//     )
-//   }
-// }
-
-// // // NZ Number plate generator:
-// const plates = generatePlates()
-// const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
-//   getCounter: () => plates.next(),
-// })
-
-// const showPlates = async () => {
-//   console.log('\n\nGenerate NZ-style car number plates in sequence')
-//   for (let i = 1; i < 20; i++) {
-//     console.log(await platePattern.gen())
-//   }
-// }
-
-// const run = async () => {
-//   await showBasicPattern()
-//   await showFancyPattern()
-//   await showPlates()
-// }
-
-// run()
-
-const dynamicArgPattern = new Pattern(/([a-z]{3,6})-(test)-<+ddd>-<?upper(1, 2)>-<?lower>/, {
-  customReplacers: {
-    upper: (args: string[]) => args.join('').toUpperCase(),
-    lower: (chars: string) => chars.toLowerCase(),
-  },
-})
-
-const showDynamicArgPattern = async () => {
-  console.log('Testing passing capture groups to customReplacers')
-  for (let i = 1; i < 12; i++) {
-    console.log('Output:', await dynamicArgPattern.gen({ customArgs: { lower: 'SomThiNG' } }))
+const showBasicPattern = async () => {
+  console.log(
+    'Basic pattern -- between 1-9 random alphabet chars, followed by an incrementing number padded with 0s, seperated by hyphen:'
+  )
+  for (let i = 1; i < 20; i++) {
+    console.log(await basicPattern.gen())
   }
 }
 
-showDynamicArgPattern()
+// Function to fetch an item from an online API
+const getAlbumString = async (key: number) => {
+  const data = await fetch('https://jsonplaceholder.typicode.com/albums')
+  return (await data.json())[key].title
+}
+
+// More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
+
+const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
+  counterInit: 5000,
+  counterIncrement: (prev) => Number(prev) + 100,
+  customReplacers: {
+    album: getAlbumString,
+    upper: (str: string) => str.toUpperCase(),
+  },
+  numberFormat: new Intl.NumberFormat('en-US'),
+})
+
+const showFancyPattern = async () => {
+  console.log(
+    '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
+  )
+  for (let i = 1; i < 20; i++) {
+    console.log(
+      await fancyPattern.gen({
+        customArgs: {
+          album: i,
+          upper: String.fromCharCode(i + 65),
+        },
+      })
+    )
+  }
+}
+
+// NZ Number plate generator:
+const plates = generatePlates()
+const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
+  getCounter: () => plates.next(),
+})
+
+const showPlates = async () => {
+  console.log('\n\nGenerate NZ-style car number plates in sequence')
+  for (let i = 1; i < 20; i++) {
+    console.log(await platePattern.gen())
+  }
+}
+
+// Generate credit card numbers with valid checksum
+const generateChecksum = (digits: string[]) =>
+  checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
+
+const cardTypeLookup = (initDigits: string) => {
+  const startDigitReference: any = {
+    4: 'Visa',
+    5: 'Mastercard',
+  }
+  return startDigitReference[initDigits.slice(0, 1)]
+}
+
+const creditCardGenerator = new Pattern(
+  /(4[0-9]|51|52|53|54|55)([0-9]{2}) ([0-9]{4} [0-9]{4} [0-9]{3})<?checksum(1, 2, 3)> \(<?whichCard(1)>\)/,
+  {
+    customReplacers: {
+      checksum: (...args: string[]) => generateChecksum(args),
+      whichCard: cardTypeLookup,
+    },
+  }
+)
+
+const generateCreditCardNums = async () => {
+  console.log('\n\nRandom credit card numbers with valid checksums')
+  for (let i = 1; i < 20; i++) {
+    console.log(await creditCardGenerator.gen())
+  }
+  console.log(
+    'Check validity at: https://www.freeformatter.com/credit-card-number-generator-validator.html'
+  )
+}
+
+export const runDemo = async () => {
+  await showBasicPattern()
+  await showFancyPattern()
+  await showPlates()
+  await generateCreditCardNums()
+}
+
+runDemo()
 
 // // A non-generator counter with seperate .getCounter() and .setCounter() methods
 // const makeDumbCounter = (init: number) => ({

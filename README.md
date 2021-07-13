@@ -34,6 +34,14 @@ console.log(await extCounter.gen({ customArgs: { double: -2 } }))
 // => COUNT: 124 | DOUBLED: -4
 ```
 
+Please check out the demo file (`demo.ts`) and the test suite (`patterns.test.ts`) for more examples.
+
+To run the demo file:
+
+```js
+
+```
+
 ## Parameters and Methods
 
 A new pattern object is constructed with `new Pattern ( pattern, options )`

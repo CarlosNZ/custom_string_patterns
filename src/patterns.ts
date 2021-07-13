@@ -62,6 +62,7 @@ class PatternGenerator {
   // Generate new string
   async gen(args: CustomArgs = {}) {
     const { shouldIncrement = true, customArgs = {} } = args
+
     // Increment counter
     const newCount = shouldIncrement
       ? parseGeneratorOutput(await this.getCounter())
@@ -74,11 +75,10 @@ class PatternGenerator {
     const captureGroupMatches =
       generatedRandexString.match(new RegExp(this.randexpPattern))?.slice(1) ?? []
 
-    const counters = Object.entries(this.substitutionMap).filter((c) => c[1].type === 'counter')
-    const functions = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'function')
     let outputString = generatedRandexString
 
     // Replace counters
+    const counters = Object.entries(this.substitutionMap).filter((c) => c[1].type === 'counter')
     counters.forEach(([index, counter]) => {
       const formattedCounter = formatCounter({
         value: this.internalCounter,
@@ -89,13 +89,14 @@ class PatternGenerator {
     })
 
     // Replace functions
-    const functionPromises = functions.map(([index, f]) => {
+    const functions = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'function')
+    const functionResultPromises = functions.map(([index, f]) => {
       const funcName = f?.funcName
-      const args = getArgs(index, funcName as string, f?.args, customArgs, captureGroupMatches)
+      const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches)
       if (!funcName) throw new Error('Missing Function name')
-      return this.customReplacers[funcName](args)
+      return this.customReplacers[funcName](...args)
     })
-    const functionResults = await Promise.all(functionPromises) // for async functions
+    const functionResults = await Promise.all(functionResultPromises) // for async functions
     functions.forEach(([index, func], i) => {
       outputString = outputString.replace(`<${index}>`, functionResults[i])
     })

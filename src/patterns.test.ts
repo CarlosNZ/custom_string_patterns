@@ -1,6 +1,7 @@
 import Pattern, { patternGen } from './patterns'
 import fetch from 'node-fetch'
 import { generatePlates } from './customCounters'
+const checkdigit = require('checkdigit')
 
 // Basic pattern generator, using internal counters and no customReplacers
 
@@ -77,7 +78,7 @@ const getAlbumString = async (key: number) => {
 
 // More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
 
-const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
+const fancyPattern = new Pattern(/^Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>$\)/, {
   counterInit: 5000,
   counterIncrement: (prev) => Number(prev) + 100,
   customReplacers: {
@@ -180,7 +181,7 @@ const dumbCounter = makeDumbCounter(99)
 
 // Pattern using seperate getCounter() and setCounter() methods;
 // Incrementer doubles the counter each iteration
-const dumbPattern = new Pattern(/<+ddddd>_(black|white)/, {
+const dumbPattern = new Pattern(/^<+ddddd>_(black|white)$/, {
   getCounter: () => dumbCounter.getCounter(),
   setCounter: (newCount: number) => dumbCounter.setCounter(newCount),
   counterIncrement: (current: number | string) => 2 * Number(current),
@@ -188,7 +189,7 @@ const dumbPattern = new Pattern(/<+ddddd>_(black|white)/, {
 
 test('Separate getCounter, setCounter and incrementer methods', () => {
   return dumbPattern.gen().then((result: string) => {
-    expect(result).toMatch(/00099_(black|white)/)
+    expect(result).toMatch(/^00099_(black|white)$/)
   })
 })
 
@@ -204,7 +205,7 @@ const generateTenMore = async () => {
 
 test('Generate 10 more', () => {
   return generateTenMore().then((result: string) => {
-    expect(result).toMatch(/101376_(black|white)/)
+    expect(result).toMatch(/^101376_(black|white)$/)
   })
 })
 
@@ -232,7 +233,7 @@ const timestampPattern = new Pattern('[A-z0-9!@#$%^&]{8}-<?timestamp>', {
 
 test('Timestamp replacer', () => {
   return timestampPattern.gen().then((result: string) => {
-    expect(result).toMatch(/[A-z0-9!@#$%^&]{8}-\d{10}/)
+    expect(result).toMatch(/^[A-z0-9!@#$%^&]{8}-\d{10}$/)
   })
 })
 
@@ -242,24 +243,40 @@ test('Shorthand verion of Timestamp replacer', () => {
       timestamp: getTimestamp,
     },
   }).then((result: string) => {
-    expect(result).toMatch(/[A-z0-9!@#$%^&]{8}-\d{10}/)
+    expect(result).toMatch(/^[A-z0-9!@#$%^&]{8}-\d{10}$/)
+  })
+})
+
+// Use regex random results as arguments in functions
+const dynamicArgPattern = new Pattern(/^([a-z]{3,6})-(test)-<+ddd>-<?upper(1, 2)>-<?lower>$/, {
+  customReplacers: {
+    upper: (...args: string[]) => args.join('').toUpperCase(),
+    lower: (chars: string) => chars.toLowerCase(),
+  },
+})
+
+test('Use regex output as arguments in custom replacer functions -- dynamicArgPattern', () => {
+  return dynamicArgPattern.gen({ customArgs: { lower: 'SomEThiNG' } }).then((result: string) => {
+    expect(result).toMatch(/^([a-z]{3,6})-(test)-\d{3}-[A-Z]{3,6}TEST-something$/)
   })
 })
 
 // Generate random credit card numbers, including correct check digit
 
-const calculateCheckDigit = (args: any) => {
-  // Implement Luhn algorithm
-  return '3'
-}
+const calculateCheckDigit = (digits: string[]) =>
+  checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
 
 const visaCardPattern = new Pattern(
-  /(4[0-9]{3}) ([0-9]{4}) ([0-9]{4}) ([0-9]{3})<?checkdigit($1, $2, $3)>/,
+  /(4[0-9]|51|52|53|54|55)([0-9]{2}) ([0-9]{4} [0-9]{4} [0-9]{3})<?checksum(1, 2, 3)>/,
   {
     customReplacers: {
-      checkdigit: calculateCheckDigit,
+      checksum: (...args: string[]) => calculateCheckDigit(args),
     },
   }
 )
 
-// Not implemented yet
+test('Generate valid random credit card number (with checkdigit)', () => {
+  return visaCardPattern.gen().then((result: string) => {
+    expect(result).toMatch(/^(4[0-9]|51|52|53|54|55)([0-9]{2}) [0-9]{4} [0-9]{4} [0-9]{4}$/)
+  })
+})
