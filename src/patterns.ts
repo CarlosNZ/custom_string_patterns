@@ -1,8 +1,6 @@
 import RandExp from 'randexp'
 import { formatCounter, getArgs, parseGeneratorOutput, processInputPattern } from './helpers'
 import { CustomReplacers, CustomArgs, PatternGeneratorOptions, SubstitutionMap } from './types'
-import { runDemo } from './demo'
-export { runDemo }
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 
