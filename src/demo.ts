@@ -104,7 +104,7 @@ export const runDemo = async () => {
   await generateCreditCardNums()
 }
 
-runDemo()
+// runDemo()
 
 // // A non-generator counter with seperate .getCounter() and .setCounter() methods
 // const makeDumbCounter = (init: number) => ({
