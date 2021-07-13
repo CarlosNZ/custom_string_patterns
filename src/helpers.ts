@@ -1,4 +1,20 @@
-import { CustomReplacers, CustomArgs } from './types'
+import RandExp from 'randexp'
+
+import { CustomReplacers, CustomArgs, SubstitutionMap } from './types'
+
+export const formatCounter = ({
+  value,
+  numberFormat,
+  length,
+}: {
+  value: number | string
+  numberFormat?: Intl.NumberFormat
+  length: number
+}) => {
+  if (numberFormat) return numberFormat.format(Number(value))
+  const numString = String(value)
+  return '0'.repeat(Math.max(0, length - numString.length)) + numString
+}
 
 export const replaceCount = (
   pattern: string,
@@ -9,6 +25,12 @@ export const replaceCount = (
   const numString = String(count)
   const paddedNumString = '0'.repeat(Math.max(0, numDigits - numString.length)) + numString
   return escapeLiterals(numberFormat ? numberFormat.format(Number(count)) : paddedNumString)
+}
+
+export const getArgs = (index: string, args: any, customArgs: any, captureGroups: string[]) => {
+  console.log('Args', args)
+  console.log('customArgs', customArgs)
+  console.log('captureGroups', captureGroups)
 }
 
 export const replaceCustom = async (
@@ -31,4 +53,28 @@ export const parseGeneratorOutput = (counterOutput: string | number | IteratorYi
   if (typeof counterOutput === 'number' || typeof counterOutput === 'string') return counterOutput
   if (counterOutput?.value) return counterOutput.value
   throw new Error('Invalid counter function, or Generator has reached limit')
+}
+
+// Turns input pattern into a randexp object with indexed substitions for
+// replacers and counters
+export const parseSource = (pattern: string | RegExp) => {
+  const patternRegex: RegExp = typeof pattern === 'string' ? new RegExp(pattern) : pattern
+  const { source, flags } = patternRegex
+  const substitionMap: SubstitutionMap = {}
+  let randexpPattern = source
+  const matches = Array.from(source.matchAll(/<(.+?)>/g)).entries()
+  for (const [index, match] of Array.from(matches)) {
+    const fullMatchString = match[0]
+    const captureGroup = match[1]
+    const operator = captureGroup[0]
+    if (operator === '+') {
+      substitionMap[index] = { type: 'counter', length: captureGroup.match(/d/g)?.length || 0 }
+    } else if (operator === '?') {
+      const [_, funcName, args] = captureGroup.match(/([A-z0-9]+)(\(.+\))?/) as Array<string>
+      substitionMap[index] = { type: 'function', funcName, args }
+    }
+    randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
+  }
+  const randexpObject = new RandExp(randexpPattern, flags)
+  return { randexpObject, substitionMap, randexpPattern }
 }

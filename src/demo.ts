@@ -4,72 +4,88 @@ import { generatePlates } from './customCounters'
 
 // Basic pattern generator, using internal counters and no customReplacers
 
-const basicPattern = new Pattern(/[A-Za-z]{4,9}-<+ddd>/)
-// Between 1 and 9 alphabet chars, followed by - and a number padded with leading 0s to 3 digits
+// const basicPattern = new Pattern(/[A-Za-z]{4,9}-<+ddd>/)
+// // Between 1 and 9 alphabet chars, followed by - and a number padded with leading 0s to 3 digits
 
-const showBasicPattern = async () => {
-  console.log(
-    'Basic pattern -- between 1-9 random alphabet chars, followed by an incrementing number padded with 0s, seperated by hyphen:'
-  )
-  for (let i = 1; i < 20; i++) {
-    console.log(await basicPattern.gen())
-  }
-}
+// const showBasicPattern = async () => {
+//   console.log(
+//     'Basic pattern -- between 1-9 random alphabet chars, followed by an incrementing number padded with 0s, seperated by hyphen:'
+//   )
+//   for (let i = 1; i < 20; i++) {
+//     console.log(await basicPattern.gen())
+//   }
+// }
 
-// Function to fetch an item from an online API
-const getAlbumString = async (key: number) => {
-  const data = await fetch('https://jsonplaceholder.typicode.com/albums')
-  return (await data.json())[key].title
-}
+// // Function to fetch an item from an online API
+// const getAlbumString = async (key: number) => {
+//   const data = await fetch('https://jsonplaceholder.typicode.com/albums')
+//   return (await data.json())[key].title
+// }
 
-// More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
+// // More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
 
-const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
-  counterInit: 5000,
-  counterIncrement: (prev) => Number(prev) + 100,
+// const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
+//   counterInit: 5000,
+//   counterIncrement: (prev) => Number(prev) + 100,
+//   customReplacers: {
+//     album: getAlbumString,
+//     upper: (str: string) => str.toUpperCase(),
+//   },
+//   numberFormat: new Intl.NumberFormat('en-US'),
+// })
+
+// const showFancyPattern = async () => {
+//   console.log(
+//     '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
+//   )
+//   for (let i = 1; i < 20; i++) {
+//     console.log(
+//       await fancyPattern.gen({
+//         customArgs: {
+//           album: i,
+//           upper: String.fromCharCode(i + 65),
+//         },
+//       })
+//     )
+//   }
+// }
+
+// // // NZ Number plate generator:
+// const plates = generatePlates()
+// const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
+//   getCounter: () => plates.next(),
+// })
+
+// const showPlates = async () => {
+//   console.log('\n\nGenerate NZ-style car number plates in sequence')
+//   for (let i = 1; i < 20; i++) {
+//     console.log(await platePattern.gen())
+//   }
+// }
+
+// const run = async () => {
+//   await showBasicPattern()
+//   await showFancyPattern()
+//   await showPlates()
+// }
+
+// run()
+
+const dynamicArgPattern = new Pattern(/([a-z]{3,6})(test)-<+ddd>-<?upper(1)>-<?lower>/, {
   customReplacers: {
-    album: getAlbumString,
-    upper: (str: string) => str.toUpperCase(),
+    upper: (chars: string) => chars.toUpperCase(),
+    lower: (chars: string) => chars.toLowerCase(),
   },
-  numberFormat: new Intl.NumberFormat('en-US'),
 })
 
-const showFancyPattern = async () => {
-  console.log(
-    '\n\nA more complex pattern with 2 custom replacers and an Intl.NumberFormat formatted counter with a non-standard incrementing function'
-  )
-  for (let i = 1; i < 20; i++) {
-    console.log(
-      await fancyPattern.gen({
-        customArgs: {
-          album: i,
-          upper: String.fromCharCode(i + 65),
-        },
-      })
-    )
+const showDynamicArgPattern = async () => {
+  console.log('Testing passing capture groups to customReplacers')
+  for (let i = 1; i < 2; i++) {
+    console.log('Output:', await dynamicArgPattern.gen({ customArgs: { lower: 'SomThiNG' } }))
   }
 }
 
-// // NZ Number plate generator:
-const plates = generatePlates()
-const platePattern = new Pattern('Sequential: <+>  Random: [A-Z]{3}[1-9][0-9]{2}', {
-  getCounter: () => plates.next(),
-})
-
-const showPlates = async () => {
-  console.log('\n\nGenerate NZ-style car number plates in sequence')
-  for (let i = 1; i < 20; i++) {
-    console.log(await platePattern.gen())
-  }
-}
-
-const run = async () => {
-  await showBasicPattern()
-  await showFancyPattern()
-  await showPlates()
-}
-
-run()
+showDynamicArgPattern()
 
 // // A non-generator counter with seperate .getCounter() and .setCounter() methods
 // const makeDumbCounter = (init: number) => ({
