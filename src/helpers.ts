@@ -27,10 +27,16 @@ export const replaceCount = (
   return escapeLiterals(numberFormat ? numberFormat.format(Number(count)) : paddedNumString)
 }
 
-export const getArgs = (index: string, args: any, customArgs: any, captureGroups: string[]) => {
-  console.log('Args', args)
-  console.log('customArgs', customArgs)
-  console.log('captureGroups', captureGroups)
+export const getArgs = (
+  index: string,
+  funcName: string,
+  argIndexes: number[],
+  customArgs: any,
+  captureGroups: string[]
+) => {
+  // Prioritise custom arguments over capture group args
+  if (customArgs[funcName]) return customArgs[funcName]
+  return argIndexes.map((i) => captureGroups[i - 1])
 }
 
 export const replaceCustom = async (
@@ -57,7 +63,7 @@ export const parseGeneratorOutput = (counterOutput: string | number | IteratorYi
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
-export const parseSource = (pattern: string | RegExp) => {
+export const processInputPattern = (pattern: string | RegExp) => {
   const patternRegex: RegExp = typeof pattern === 'string' ? new RegExp(pattern) : pattern
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
@@ -70,11 +76,20 @@ export const parseSource = (pattern: string | RegExp) => {
     if (operator === '+') {
       substitionMap[index] = { type: 'counter', length: captureGroup.match(/d/g)?.length || 0 }
     } else if (operator === '?') {
-      const [_, funcName, args] = captureGroup.match(/([A-z0-9]+)(\(.+\))?/) as Array<string>
-      substitionMap[index] = { type: 'function', funcName, args }
+      const [_, funcName, argsString] = captureGroup.match(/([A-z0-9]+)(\(.*\))?/) as Array<string>
+      substitionMap[index] = { type: 'function', funcName, args: stripArgs(argsString) }
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }
   const randexpObject = new RandExp(randexpPattern, flags)
   return { randexpObject, substitionMap, randexpPattern }
+}
+
+// Remove brackets and split into array of separate args
+const stripArgs = (argsString: string) => {
+  if (!argsString) return []
+  return argsString
+    .slice(1, -1)
+    .split(',')
+    .map((arg) => Number(arg))
 }

@@ -1,5 +1,5 @@
 import RandExp from 'randexp'
-import { formatCounter, getArgs, parseGeneratorOutput, parseSource } from './helpers'
+import { formatCounter, getArgs, parseGeneratorOutput, processInputPattern } from './helpers'
 import {
   CustomReplacers,
   GenerateArgs as CustomArgs,
@@ -50,7 +50,7 @@ class PatternGenerator {
     this.getCounter = getCounter ?? (() => this.simpleCounter.next())
     this.setCounter = setCounter ?? null
     this.pattern = pattern
-    const { randexpObject, substitionMap, randexpPattern } = parseSource(pattern)
+    const { randexpObject, substitionMap, randexpPattern } = processInputPattern(pattern)
     this.randexpObject = randexpObject
     this.substitutionMap = substitionMap
     this.randexpPattern = randexpPattern
@@ -71,8 +71,6 @@ class PatternGenerator {
 
     // Create randexp string (with substitutions)
     const generatedRandexString = this.randexpObject.gen()
-    console.log('randexpString', generatedRandexString)
-    console.log('pattern:', this.randexpPattern)
     const captureGroupMatches =
       generatedRandexString.match(new RegExp(this.randexpPattern))?.slice(1) ?? []
 
@@ -91,39 +89,17 @@ class PatternGenerator {
     })
 
     // Replace functions
-    const promiseArray = functions.map(([index, f]) => {
+    const functionResults = functions.map(([index, f]) => {
       const funcName = f?.funcName
-      const args = getArgs(index, f?.args, customArgs, captureGroupMatches)
+      const args = getArgs(index, funcName as string, f?.args, customArgs, captureGroupMatches)
       if (!funcName) throw new Error('Missing Function name')
-      return this.customReplacers[funcName]('test')
+      return this.customReplacers[funcName](args)
     })
-    await Promise.all(promiseArray)
-    console.log('Funcs', promiseArray)
+    await Promise.all(functionResults) // for async functions
+    functions.forEach(([index, func], i) => {
+      outputString = outputString.replace(`<${index}>`, functionResults[i])
+    })
 
-    // console.log('randexp', this.randexpObject)
-    // let newSource = source
-    // const matches = Array.from(source.matchAll(new RegExp('<(.+?)>', 'g')))
-    // for (const match of matches) {
-    //   const fullMatchString = match[0]
-    //   const captureGroup = match[1]
-    //   const operator = captureGroup[0]
-    //   // Replace counters
-    //   if (operator === '+') {
-    //     const replacementCounter = replaceCount(captureGroup, newCount, this.numberFormat)
-    //     newSource = newSource.replace(fullMatchString, replacementCounter)
-    //   }
-    //   // Custom Replacers
-    //   else if (operator === '?') {
-    //     const replacementString = await replaceCustom(
-    //       captureGroup,
-    //       this.customReplacers,
-    //       customArgs
-    //     )
-    //     newSource = newSource.replace(fullMatchString, replacementString)
-    //   }
-    // }
-    // const randexpPattern = new RegExp(newSource, flags)
-    // return new RandExp(randexpPattern).gen()
     return outputString
   }
 }

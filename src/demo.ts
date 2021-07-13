@@ -71,16 +71,16 @@ import { generatePlates } from './customCounters'
 
 // run()
 
-const dynamicArgPattern = new Pattern(/([a-z]{3,6})(test)-<+ddd>-<?upper(1)>-<?lower>/, {
+const dynamicArgPattern = new Pattern(/([a-z]{3,6})-(test)-<+ddd>-<?upper(1, 2)>-<?lower>/, {
   customReplacers: {
-    upper: (chars: string) => chars.toUpperCase(),
+    upper: (args: string[]) => args.join('').toUpperCase(),
     lower: (chars: string) => chars.toLowerCase(),
   },
 })
 
 const showDynamicArgPattern = async () => {
   console.log('Testing passing capture groups to customReplacers')
-  for (let i = 1; i < 2; i++) {
+  for (let i = 1; i < 12; i++) {
     console.log('Output:', await dynamicArgPattern.gen({ customArgs: { lower: 'SomThiNG' } }))
   }
 }
