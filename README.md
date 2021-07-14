@@ -169,11 +169,13 @@ The data to be used in [data replacement](#3-data-replacement) fields.
 
 ## Shorthand use
 
-If only one output string is required, you can generate it using the short-hand function instead of constructing and calling `.gen()` on a Pattern object:
+If only one output string is required, you can generate it using the short-hand function instead of constructing and calling `.gen()` on a Pattern object: `patternGen(pattern, options, args)`
+
+E.g.
 
 ```js
 import { patternGen } from 'custom-string-patterns'
 
-console.log(await patternGen(/[A-Z]{3}-<+dddd>/), { getCounter })
-// => PAL-005
+console.log(await patternGen(/[A-Z]{3}-<text>-<+dddd>/), { getCounter }, { data: { text: 'XXX' } })
+// => PAL-XXX-005
 ```
