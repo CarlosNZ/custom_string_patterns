@@ -1,0 +1,3 @@
+import { runDemo } from '.'
+
+runDemo()

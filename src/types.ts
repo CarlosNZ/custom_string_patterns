@@ -18,6 +18,7 @@ export interface PatternGeneratorOptions {
   counterInit?: number
   customReplacers?: CustomReplacers
   numberFormat?: Intl.NumberFormat
+  fallbackString?: string
 }
 
 type FunctionReplacement = {
@@ -25,6 +26,7 @@ type FunctionReplacement = {
   funcName: string
   args?: any
   length?: number
+  property?: string
 }
 
 type CounterReplacement = {
@@ -32,7 +34,16 @@ type CounterReplacement = {
   length: number
   funcName?: number
   args?: any
+  property?: string
+}
+
+type DataReplacement = {
+  type: 'data'
+  property: string
+  length?: number
+  funcName?: number
+  args?: any
 }
 export interface SubstitutionMap {
-  [key: string]: FunctionReplacement | CounterReplacement
+  [key: string]: FunctionReplacement | CounterReplacement | DataReplacement
 }

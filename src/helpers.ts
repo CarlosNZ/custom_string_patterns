@@ -19,6 +19,9 @@ export const processInputPattern = (pattern: string | RegExp) => {
     } else if (operator === '?') {
       const [_, funcName, argsString] = captureGroup.match(/([A-z0-9]+)(\(.*\))?/) as Array<string>
       substitionMap[index] = { type: 'function', funcName, args: splitArgs(argsString) }
+    } else {
+      // Remaining will be object properties to extract
+      substitionMap[index] = { type: 'data', property: captureGroup }
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }

@@ -1,6 +1,6 @@
 {
   "name": "custom_string_patterns",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Generate random and incrementing string patterns using regex and custom functions",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -12,10 +12,12 @@
   "license": "MIT",
   "dependencies": {
     "checkdigit": "^1.1.1",
+    "lodash": "^4.17.21",
     "randexp": "^0.5.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.171",
     "@types/node-fetch": "^2.5.11",
     "jest": "^27.0.6",
     "node-fetch": "^2.6.1",
@@ -27,7 +29,7 @@
     "test": "jest",
     "build": "rimraf ./build && tsc",
     "dev": "ts-node ./src/dev.ts",
-    "demo": "ts-node ./src/demo.ts",
+    "demo": "ts-node ./src/runDemo.ts",
     "prepublishOnly": "yarn build"
   },
   "keywords": [
