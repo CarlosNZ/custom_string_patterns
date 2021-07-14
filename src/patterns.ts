@@ -1,4 +1,5 @@
 import RandExp from 'randexp'
+import { get as extractObjectProperty } from 'lodash'
 import { formatCounter, getArgs, parseGeneratorOutput, processInputPattern } from './helpers'
 import { CustomReplacers, CustomArgs, PatternGeneratorOptions, SubstitutionMap } from './types'
 
@@ -13,9 +14,13 @@ function* simpleCounter(init: number, increment: Function) {
 }
 
 // A "short-hand" function if only one generated string is required
-export const patternGen = (pattern: string | RegExp, options: PatternGeneratorOptions = {}) => {
+export const patternGen = (
+  pattern: string | RegExp,
+  options: PatternGeneratorOptions = {},
+  args: CustomArgs = {}
+) => {
   const pg = new PatternGenerator(pattern, options)
-  return pg.gen()
+  return pg.gen(args)
 }
 class PatternGenerator {
   simpleCounter: Generator
@@ -29,6 +34,7 @@ class PatternGenerator {
   internalCounter: number
   numberFormat?: Intl.NumberFormat
   customReplacers: CustomReplacers
+  fallbackString: string
 
   constructor(
     pattern: string | RegExp,
@@ -39,6 +45,7 @@ class PatternGenerator {
       counterInit = 1,
       customReplacers = {},
       numberFormat,
+      fallbackString,
     }: PatternGeneratorOptions = {}
   ) {
     this.simpleCounter = simpleCounter(counterInit, counterIncrement)
@@ -53,10 +60,11 @@ class PatternGenerator {
     this.internalCounter = counterInit
     this.numberFormat = numberFormat
     this.customReplacers = customReplacers
+    this.fallbackString = fallbackString ?? ''
   }
   // Generate new string
   async gen(args: CustomArgs = {}) {
-    const { shouldIncrement = true, customArgs = {} } = args
+    const { shouldIncrement = true, customArgs = {}, data = {} } = args
 
     // Increment counter
     const newCount = shouldIncrement
@@ -94,6 +102,15 @@ class PatternGenerator {
     const functionResults = await Promise.all(functionResultPromises) // for async functions
     functions.forEach(([index, func], i) => {
       outputString = outputString.replace(`<${index}>`, functionResults[i])
+    })
+
+    // Extract data properties
+    const dataProperties = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'data')
+    dataProperties.forEach(([index, { property }]) => {
+      outputString = outputString.replace(
+        `<${index}>`,
+        extractObjectProperty(data, property as string, this.fallbackString)
+      )
     })
 
     return outputString

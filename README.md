@@ -59,19 +59,23 @@ A new pattern object is constructed with `new Pattern ( pattern, options )`
 
 ### pattern -- `string` or `RegExp`
 
-The syntax of pattern is a regular expression (string or object), but with custom enhancements to represent counters or custom replacers.
+The syntax of pattern is a regular expression (string or object), but with custom enhancements to represent counters, replacement functions, or data fields.
 
 Please see [randexp documentation](https://github.com/fent/randexp.js) for explanation of how a basic regex is used to generate a random string.
 
-Counters and custom replacers are pre-processed (using the syntax [below](#custom-replacers)) into a final regex which is handled by randexp.
+All counter/custom/data replacements are wrapped in `< >`, and the first character inside indicates which type of replacement it should be:
 
-#### Counter substitutions
+- `+` - a Counter, e.g. `<+ddd>`
+- `?` - a Function, e.g. `<?toUpper>` (or `<?toUpper(1...)` -- see [below](#customreplacers--funcname-args--string--number--))
+- no prefix - object data replacement, e.g. `<user.firstName>`
+
+#### 1. Counter substitutions (`+`)
 
 Counters are placed into the pattern string by using `<+dd>`, where `d` represents a digit in the output string -- numbers will be padded with leading zeroes to match (at least) the length of the `ddd` sequence. i.e. `<+dddd>` with output number `55` yields `0055`
 
 More complex number formatting can be achieved using a `numberFormat` parameter in "options" (see [below](#numberformat--intlnumberformat)).
 
-#### Custom replacers
+#### 2. Custom replacers (`?`)
 
 Replacement functions are defined in "options" (see [below](#customreplacers--funcname-args--string--number--)), but are invoked as part of the string pattern using `<?func>`, where "func" is the name of the function defined in options.
 
@@ -84,6 +88,18 @@ The arguments for the replacement functions can be provided in two different way
    E.g. If you want a replacement function `toUpper` to act on the output of capture group 1, you'd include `<?toUpper(1)>` at the appropriate place in the pattern.
 
 Note that if both are defined, `customArgs` takes precedence over capture groups.
+
+#### 3. Data replacement
+
+The remaining replacements define properties on a "data" object that is passed in to the `.gen()` method (in `data` field)
+
+For example, if the replacement string was `<user.firstName>` and we have a "user" object, such as:
+
+```js
+const user = { firstName: 'Albert', lastName: 'Einstein' }
+```
+
+When we generate a new string, we can call `.gen( { data: { user } } )` to replace it with "Albert"
 
 ### options
 
@@ -137,7 +153,7 @@ Note that `.gen()` is Async, since it's expected that many of the custom functio
 
 The `.gen()` method can take a single, optional parameter object, with the following fields:
 
-`{ shouldIncrement, customArgs }`
+`{ shouldIncrement, customArgs, data }`
 
 #### `shouldIncrement: boolean`
 
@@ -146,6 +162,10 @@ If `false`, the Pattern Generator will return a new string _without_ incrementin
 #### `customArgs: { { <funcName>: (args), ... } }`
 
 If your customReplacer functions take arguments, then you supply the arguments to the `.gen()` method here. `customArgs` is an object with the same structure as `customReplacers` ([above](#custom-replacers)), but instead of the values being functions, they are the arguments supplied to those functions.
+
+#### `data: { <key>: <value>, ... }`
+
+The data to be used in data replacement fields.
 
 ## Shorthand use
 

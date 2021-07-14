@@ -126,8 +126,6 @@ test('Generate 3 more', () => {
     })
 })
 
-// ^ Can't use Shorthand pattern as it doesn't handle customArgs
-
 // NZ Number plate generator:
 const plates = generatePlates()
 
@@ -278,5 +276,39 @@ const visaCardPattern = new Pattern(
 test('Generate valid random credit card number (with checkdigit)', () => {
   return visaCardPattern.gen().then((result: string) => {
     expect(result).toMatch(/^(4[0-9]|51|52|53|54|55)([0-9]{2}) [0-9]{4} [0-9]{4} [0-9]{4}$/)
+  })
+})
+
+// Extract object data
+
+const dataPattern = new Pattern(/<?f1>-[A-Z]{3}-<user.firstName>-<+ddd>/, {
+  customReplacers: { f1: () => 'Testing' },
+  counterInit: 123,
+})
+
+test('Extract object properties from replacer field (info.firstName)', () => {
+  return dataPattern.gen({ data: { user: { firstName: 'Carl' } } }).then((result: string) => {
+    expect(result).toMatch(/^Testing-[A-Z]{3}-Carl-123$/)
+  })
+})
+test('Object property field missing', () => {
+  return dataPattern.gen({ data: { info: 'Nope' } }).then((result: string) => {
+    expect(result).toMatch(/^Testing-[A-Z]{3}--124$/)
+  })
+})
+
+test('Shorthand form, with two fields and a fallback', () => {
+  return patternGen(
+    /<?f1>-[A-Z]{3}-<user.firstName>_<user.lastName>-<+ddd>/,
+    {
+      customReplacers: {
+        f1: (chars: string) => chars.toUpperCase(),
+      },
+      counterInit: 10,
+      fallbackString: 'MISSING_PROPERTY',
+    },
+    { customArgs: { f1: 'flutter' }, data: { user: { firstName: 'Bodhi' } } }
+  ).then((result: string) => {
+    expect(result).toMatch(/^FLUTTER-[A-Z]{3}-Bodhi_MISSING_PROPERTY-010$/)
   })
 })
