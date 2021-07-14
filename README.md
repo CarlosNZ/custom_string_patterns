@@ -12,6 +12,7 @@ or: `yarn add custom_string_patterns`
 - [Usage](#usage-examples)
 - [Parameters & Methods](#parameters-and-methods)
 - [Shorthand use](#shorthand-use)
+- [Dev environment](#dev-environment)
 
 ## Usage examples
 
@@ -179,3 +180,12 @@ import { patternGen } from 'custom-string-patterns'
 console.log(await patternGen(/[A-Z]{3}-<text>-<+dddd>/), { getCounter }, { data: { text: 'XXX' } })
 // => PAL-XXX-005
 ```
+
+## Dev environment
+
+npm/yarn scripts available from dev environment
+
+- `test` -- run Jest test suite
+- `build` -- compile and build (to "build" folder)\
+- `demo` -- run demo file
+- `dev` -- run dev file
