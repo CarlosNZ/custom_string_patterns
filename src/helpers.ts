@@ -9,7 +9,7 @@ export const processInputPattern = (pattern: string | RegExp) => {
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
-  const matches = Array.from(source.matchAll(/<(.+?)>/g)).entries()
+  const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
   for (const [index, match] of Array.from(matches)) {
     const fullMatchString = match[0]
     const captureGroup = match[1]
