@@ -324,3 +324,9 @@ test('Pattern with literal <> chars', () => {
     expect(result).toMatch(/^<1>-[A-Z]{3}-01-Testing$/)
   })
 })
+
+test('Pattern with incomplete (non-closed) literal < char', () => {
+  return patternGen(/Another\<<+dd>-\>\>_<+dddd>_DONE/).then((result: string) => {
+    expect(result).toMatch(/^Another<01->>_0001_DONE$/)
+  })
+})
