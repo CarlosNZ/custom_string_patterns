@@ -1,6 +1,9 @@
 import RandExp from 'randexp'
-
 import { SubstitutionMap } from './types'
+
+// Magic strings -- it sucks that we need these
+export const ESCAPED_OPEN_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_0pen'
+export const ESCAPED_CLOSE_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_cl0se'
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
@@ -25,6 +28,11 @@ export const processInputPattern = (pattern: string | RegExp) => {
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }
+  // Replace literal backslashes with "magic" strings" to preserve through
+  // RandExp construction -- this shouldn't be necessary
+  randexpPattern = randexpPattern
+    .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)
+    .replace(/\\>/g, ESCAPED_CLOSE_ANGLE_BRACKET)
   const randexpObject = new RandExp(randexpPattern, flags)
   return { randexpObject, substitionMap, randexpPattern }
 }

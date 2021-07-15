@@ -1,6 +1,13 @@
 import RandExp from 'randexp'
 import { get as extractObjectProperty } from 'lodash'
-import { formatCounter, getArgs, parseGeneratorOutput, processInputPattern } from './helpers'
+import {
+  formatCounter,
+  getArgs,
+  parseGeneratorOutput,
+  processInputPattern,
+  ESCAPED_OPEN_ANGLE_BRACKET,
+  ESCAPED_CLOSE_ANGLE_BRACKET,
+} from './helpers'
 import { CustomReplacers, CustomArgs, PatternGeneratorOptions, SubstitutionMap } from './types'
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
@@ -127,6 +134,8 @@ class PatternGenerator {
     })
 
     return outputString
+      .replace(new RegExp(ESCAPED_OPEN_ANGLE_BRACKET, 'g'), '<')
+      .replace(new RegExp(ESCAPED_CLOSE_ANGLE_BRACKET, 'g'), '>')
   }
 }
 

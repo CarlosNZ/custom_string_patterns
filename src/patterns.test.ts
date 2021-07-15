@@ -315,7 +315,7 @@ test('Shorthand form, with two fields and a fallback', () => {
 
 // Handle literal <>
 
-const patternWithLiterals = new Pattern(/\\<1\\>-[A-Z]{3}-<+dd>-<?f1>/, {
+const patternWithLiterals = new Pattern(/\<1\>-[A-Z]{3}-<+dd>-<?f1>/, {
   customReplacers: { f1: () => 'Testing' },
 })
 

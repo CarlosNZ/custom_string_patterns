@@ -186,6 +186,6 @@ console.log(await patternGen(/[A-Z]{3}-<text>-<+dddd>/), { getCounter }, { data:
 npm/yarn scripts available from dev environment
 
 - `test` -- run Jest test suite
-- `build` -- compile and build (to "build" folder)\
+- `build` -- compile and build (to "build" folder)
 - `demo` -- run demo file
 - `dev` -- run dev file
