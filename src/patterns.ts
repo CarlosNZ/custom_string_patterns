@@ -83,21 +83,25 @@ class PatternGenerator {
     // Replace counters
     const counters = Object.entries(this.substitutionMap).filter((c) => c[1].type === 'counter')
     counters.forEach(([index, counter]) => {
-      const formattedCounter = formatCounter({
-        value: this.internalCounter,
-        numberFormat: this.numberFormat,
-        length: counter?.length || 0,
-      })
-      outputString = outputString.replace(`<${index}>`, formattedCounter)
+      if ('length' in counter) {
+        const formattedCounter = formatCounter({
+          value: this.internalCounter,
+          numberFormat: this.numberFormat,
+          length: counter?.length || 0,
+        })
+        outputString = outputString.replace(`<${index}>`, formattedCounter)
+      }
     })
 
     // Replace functions
     const functions = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'function')
     const functionResultPromises = functions.map(([index, f]) => {
-      const funcName = f?.funcName
-      const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches)
-      if (!funcName) throw new Error('Missing Function name')
-      return this.customReplacers[funcName](...args)
+      if ('funcName' in f) {
+        const funcName = f?.funcName
+        const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches)
+        if (!funcName) throw new Error('Missing Function name')
+        return this.customReplacers[funcName](...args)
+      }
     })
     const functionResults = await Promise.all(functionResultPromises) // for async functions
     functions.forEach(([index, func], i) => {
@@ -106,11 +110,14 @@ class PatternGenerator {
 
     // Extract data properties
     const dataProperties = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'data')
-    dataProperties.forEach(([index, { property }]) => {
-      outputString = outputString.replace(
-        `<${index}>`,
-        extractObjectProperty(data, property as string, this.fallbackString)
-      )
+    dataProperties.forEach(([index, propertyObj]) => {
+      if ('property' in propertyObj) {
+        const { property } = propertyObj
+        outputString = outputString.replace(
+          `<${index}>`,
+          extractObjectProperty(data, property as string, this.fallbackString)
+        )
+      }
     })
 
     return outputString

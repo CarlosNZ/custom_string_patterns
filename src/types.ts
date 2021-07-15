@@ -21,32 +21,21 @@ export interface PatternGeneratorOptions {
   fallbackString?: string
 }
 
+type CounterReplacement = {
+  type: 'counter'
+  length: number
+}
+
 type FunctionReplacement = {
   type: 'function'
   funcName: string
   args?: any
-  // Below not part of type, but need to avoid errors 🤷‍♂️
-  length?: number
-  property?: string
-}
-
-type CounterReplacement = {
-  type: 'counter'
-  length: number
-  // Below not part of type, but need to avoid errors 🤷‍♂️
-  funcName?: number
-  args?: any
-  property?: string
 }
 
 type DataReplacement = {
   type: 'data'
   property: string
-  // Below not part of type, but need to avoid errors 🤷‍♂️
-  length?: number
-  funcName?: number
-  args?: any
 }
 export interface SubstitutionMap {
-  [key: string]: FunctionReplacement | CounterReplacement | DataReplacement
+  [key: string]: CounterReplacement | FunctionReplacement | DataReplacement
 }
