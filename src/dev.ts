@@ -12,6 +12,10 @@ const getAlbumString = async (key: number) => {
   return (await data.json())[key].title
 }
 
+const basicPattern = new Pattern(/.{100}/i)
+
+basicPattern.gen().then((res) => console.log(res))
+
 const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
   counterInit: 5000,
   counterIncrement: (prev) => Number(prev) + 100,

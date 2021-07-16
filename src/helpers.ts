@@ -1,13 +1,9 @@
 import RandExp from 'randexp'
-import { SubstitutionMap } from './types'
-
-// Magic strings -- it sucks that we need these
-export const ESCAPED_OPEN_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_0pen'
-export const ESCAPED_CLOSE_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_cl0se'
+import { SubstitutionMap, RandExpOptions } from './types'
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
-export const processInputPattern = (pattern: string | RegExp) => {
+export const processInputPattern = (pattern: string | RegExp, randexpOptions: RandExpOptions) => {
   const patternRegex: RegExp = typeof pattern === 'string' ? new RegExp(pattern) : pattern
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
@@ -28,12 +24,19 @@ export const processInputPattern = (pattern: string | RegExp) => {
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }
-  // Replace literal backslashes with "magic" strings" to preserve through
-  // RandExp construction -- this shouldn't be necessary
+  // Replace literal backslashes with "magic strings" to preserve through so they don't get replaced by subsequent replacements
   randexpPattern = randexpPattern
     .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)
     .replace(/\\>/g, ESCAPED_CLOSE_ANGLE_BRACKET)
+
+  // Create RandExp object and apply options
   const randexpObject = new RandExp(randexpPattern, flags)
+  const { defaultRangeAdd, defaultRangeSubtract, regexMax } = randexpOptions
+  if (defaultRangeAdd) randexpObject.defaultRange.add(defaultRangeAdd[0], defaultRangeAdd[1])
+  if (defaultRangeSubtract)
+    randexpObject.defaultRange.add(defaultRangeSubtract[0], defaultRangeSubtract[1])
+  if (regexMax) randexpObject.max = regexMax
+
   return { randexpObject, substitionMap, randexpPattern }
 }
 
@@ -75,3 +78,7 @@ export const parseGeneratorOutput = (counterOutput: string | number | IteratorYi
   if (counterOutput?.value) return counterOutput.value
   throw new Error('Invalid counter function, or Generator has reached limit')
 }
+
+// Magic strings
+export const ESCAPED_OPEN_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_0pen'
+export const ESCAPED_CLOSE_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_cl0se'

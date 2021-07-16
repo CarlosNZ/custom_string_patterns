@@ -19,6 +19,9 @@ export interface PatternGeneratorOptions {
   customReplacers?: CustomReplacers
   numberFormat?: Intl.NumberFormat
   fallbackString?: string
+  defaultRangeAdd?: [number, number]
+  defaultRangeSubtract?: [number, number]
+  regexMax?: number
 }
 
 type CounterReplacement = {
@@ -38,4 +41,10 @@ type DataReplacement = {
 }
 export interface SubstitutionMap {
   [key: string]: CounterReplacement | FunctionReplacement | DataReplacement
+}
+
+export type RandExpOptions = {
+  defaultRangeAdd?: [number, number]
+  defaultRangeSubtract?: [number, number]
+  regexMax?: number
 }

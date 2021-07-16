@@ -8,7 +8,13 @@ import {
   ESCAPED_OPEN_ANGLE_BRACKET,
   ESCAPED_CLOSE_ANGLE_BRACKET,
 } from './helpers'
-import { CustomReplacers, CustomArgs, PatternGeneratorOptions, SubstitutionMap } from './types'
+import {
+  CustomReplacers,
+  CustomArgs,
+  PatternGeneratorOptions,
+  SubstitutionMap,
+  RandExpOptions,
+} from './types'
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 
@@ -42,6 +48,7 @@ class PatternGenerator {
   numberFormat?: Intl.NumberFormat
   customReplacers: CustomReplacers
   fallbackString: string
+  randexpOptions: RandExpOptions
 
   constructor(
     pattern: string | RegExp,
@@ -53,13 +60,20 @@ class PatternGenerator {
       customReplacers = {},
       numberFormat,
       fallbackString,
+      defaultRangeAdd,
+      defaultRangeSubtract,
+      regexMax,
     }: PatternGeneratorOptions = {}
   ) {
     this.simpleCounter = simpleCounter(counterInit, counterIncrement)
     this.getCounter = getCounter ?? (() => this.simpleCounter.next())
     this.setCounter = setCounter ?? null
     this.pattern = pattern
-    const { randexpObject, substitionMap, randexpPattern } = processInputPattern(pattern)
+    const { randexpObject, substitionMap, randexpPattern } = processInputPattern(pattern, {
+      defaultRangeAdd,
+      defaultRangeSubtract,
+      regexMax,
+    })
     this.randexpObject = randexpObject
     this.substitutionMap = substitionMap
     this.randexpPattern = randexpPattern
@@ -68,6 +82,7 @@ class PatternGenerator {
     this.numberFormat = numberFormat
     this.customReplacers = customReplacers
     this.fallbackString = fallbackString ?? ''
+    this.randexpOptions = { defaultRangeAdd, defaultRangeSubtract, regexMax }
   }
   // Generate new string
   async gen(args: CustomArgs = {}) {
