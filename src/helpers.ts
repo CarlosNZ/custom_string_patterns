@@ -12,6 +12,34 @@ export const processInputPattern = (pattern: string | RegExp) => {
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
+  const splitPattern = source.split(/((?<!\\)<.+?(?<!\\)>)/)
+  console.log('splitPattern', splitPattern)
+  let regexCount = 1
+  const elements = splitPattern.map((token) => {
+    if (token.match(/^<\+(d*)>$/))
+      return {
+        type: 'counter',
+        length: token.length - 3,
+      }
+    else if (token.match(/^<\?(d*)>$/))
+      return {
+        type: 'function',
+        funcName: token.match(/^<\?(d*)>$/)?.[1],
+        args: null,
+      }
+    else if (token.match(/^<(d*)>$/))
+      return {
+        type: 'data',
+        property: token.match(/^<(d*)>$/)?.[1],
+      }
+    else
+      return {
+        type: 'regex',
+        randexp: new RandExp(token),
+        regexIndex: regexCount++,
+      }
+  })
+  console.log('elements', elements)
   const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
   for (const [index, match] of Array.from(matches)) {
     const fullMatchString = match[0]

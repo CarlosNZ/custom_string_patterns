@@ -105,6 +105,7 @@ class PatternGenerator {
 
     // Replace functions
     const functions = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'function')
+    console.log('functions,', functions)
     const functionResultPromises = functions.map(([index, f]) => {
       if ('funcName' in f) {
         const funcName = f?.funcName

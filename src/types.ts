@@ -1,3 +1,5 @@
+import RandExp from 'randexp/types'
+
 export interface CustomReplacers {
   [key: string]: Function
 }
@@ -36,6 +38,13 @@ type DataReplacement = {
   type: 'data'
   property: string
 }
+
+type RegexReplacement = {
+  type: 'regex'
+  randexp: RandExp
+  regexIndex: number
+}
+
 export interface SubstitutionMap {
   [key: string]: CounterReplacement | FunctionReplacement | DataReplacement
 }
