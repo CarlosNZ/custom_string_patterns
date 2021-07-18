@@ -330,3 +330,28 @@ test('Pattern with incomplete (non-closed) literal < char', () => {
     expect(result).toMatch(/^Another<01->>_0001_DONE$/)
   })
 })
+
+// Change Pattern properties in place
+
+const patternForMutation = new Pattern(/[A-Z]{3}-<+ddd>/)
+test('Pattern output before update Pattern', () => {
+  return patternForMutation.gen().then((result: string) => {
+    expect(result).toMatch(/^[A-Z]{3}-001/)
+  })
+})
+
+test('Pattern output after update Pattern', () => {
+  patternForMutation.setPattern(/[A-Z]{4} - <+dddd>/)
+  return patternForMutation.gen().then((result: string) => {
+    expect(result).toMatch(/^[A-Z]{4} - 0002/)
+  })
+})
+
+test('Pattern output after update Options', () => {
+  patternForMutation.setOptions({
+    getCounter: () => 1000,
+  })
+  return patternForMutation.gen().then((result: string) => {
+    expect(result).toMatch(/^[A-Z]{4} - 1000/)
+  })
+})

@@ -84,8 +84,38 @@ class PatternGenerator {
     this.fallbackString = fallbackString ?? ''
     this.randexpOptions = { defaultRangeAdd, defaultRangeSubtract, regexMax }
   }
+  public setPattern(newPattern: string | RegExp) {
+    const { randexpObject, substitionMap, randexpPattern } = processInputPattern(newPattern, {})
+    this.pattern = newPattern
+    this.randexpObject = randexpObject
+    this.substitutionMap = substitionMap
+    this.randexpPattern = randexpPattern
+  }
+  public setOptions({
+    getCounter,
+    setCounter,
+    // counterIncrement,
+    // counterInit -- can't change,
+    customReplacers,
+    numberFormat,
+    fallbackString,
+    defaultRangeAdd,
+    defaultRangeSubtract,
+    regexMax,
+  }: PatternGeneratorOptions) {
+    if (getCounter) this.getCounter = getCounter
+    if (setCounter) this.setCounter = setCounter
+    if (customReplacers) this.customReplacers = customReplacers
+    if (numberFormat) this.numberFormat = numberFormat
+    if (fallbackString) this.fallbackString = fallbackString
+    if (defaultRangeAdd) this.randexpObject.defaultRange.add(defaultRangeAdd[0], defaultRangeAdd[1])
+    if (defaultRangeSubtract)
+      this.randexpObject.defaultRange.subtract(defaultRangeSubtract[0], defaultRangeSubtract[1])
+    if (regexMax) this.randexpObject.max = regexMax
+  }
+
   // Generate new string
-  async gen(args: CustomArgs = {}) {
+  public async gen(args: CustomArgs = {}) {
     const { shouldIncrement = true, customArgs = {}, data = {} } = args
 
     // Increment counter
