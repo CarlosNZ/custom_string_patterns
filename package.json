@@ -11,6 +11,7 @@
   "author": "Carl Smith <5456533+CarlosNZ@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
     "checkdigit": "^1.1.1",
     "lodash": "^4.17.21",
     "randexp": "^0.5.3"
@@ -20,7 +21,6 @@
     "@types/lodash": "^4.14.171",
     "@types/node-fetch": "^2.5.11",
     "jest": "^27.0.6",
-    "node-fetch": "^2.6.1",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.5"
