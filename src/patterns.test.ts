@@ -312,3 +312,21 @@ test('Shorthand form, with two fields and a fallback', () => {
     expect(result).toMatch(/^FLUTTER-[A-Z]{3}-Bodhi_MISSING_PROPERTY-010$/)
   })
 })
+
+// Handle literal <>
+
+const patternWithLiterals = new Pattern(/\<1\>-[A-Z]{3}-<+dd>-<?f1>/, {
+  customReplacers: { f1: () => 'Testing' },
+})
+
+test('Pattern with literal <> chars', () => {
+  return patternWithLiterals.gen().then((result: string) => {
+    expect(result).toMatch(/^<1>-[A-Z]{3}-01-Testing$/)
+  })
+})
+
+test('Pattern with incomplete (non-closed) literal < char', () => {
+  return patternGen(/Another\<<+dd>-\>\>_<+dddd>_DONE/).then((result: string) => {
+    expect(result).toMatch(/^Another<01->>_0001_DONE$/)
+  })
+})

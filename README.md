@@ -181,11 +181,20 @@ console.log(await patternGen(/[A-Z]{3}-<text>-<+dddd>/), { getCounter }, { data:
 // => PAL-XXX-005
 ```
 
+## Additional randexp info
+
+Extended features of randexp can be access via the custom_string_patterns constructor options, namely:
+
+- `defaultRangeAdd`, `defaultRangeSubtract`: corresponds to `randexp.defaultRange.add()` and `randexp.defaultRange.subtract()` , respectively. e.g.:  
+  `new Pattern(/<pattern>/, { defaultRangeAdd(0, 65535) } )`
+- `regexMax`: corresponds to `randexp.max`, e.g.:  
+  `new Pattern(/<pattern>/, { regexMax: 10000 } )`
+
 ## Dev environment
 
 npm/yarn scripts available from dev environment
 
 - `test` -- run Jest test suite
-- `build` -- compile and build (to "build" folder)\
+- `build` -- compile and build (to "build" folder)
 - `demo` -- run demo file
 - `dev` -- run dev file

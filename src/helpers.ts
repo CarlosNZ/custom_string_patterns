@@ -1,15 +1,14 @@
 import RandExp from 'randexp'
-
-import { SubstitutionMap } from './types'
+import { SubstitutionMap, RandExpOptions } from './types'
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
-export const processInputPattern = (pattern: string | RegExp) => {
+export const processInputPattern = (pattern: string | RegExp, randexpOptions: RandExpOptions) => {
   const patternRegex: RegExp = typeof pattern === 'string' ? new RegExp(pattern) : pattern
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
-  const matches = Array.from(source.matchAll(/<(.+?)>/g)).entries()
+  const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
   for (const [index, match] of Array.from(matches)) {
     const fullMatchString = match[0]
     const captureGroup = match[1]
@@ -25,7 +24,19 @@ export const processInputPattern = (pattern: string | RegExp) => {
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }
+  // Replace literal backslashes with "magic strings" to preserve through so they don't get replaced by subsequent replacements
+  randexpPattern = randexpPattern
+    .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)
+    .replace(/\\>/g, ESCAPED_CLOSE_ANGLE_BRACKET)
+
+  // Create RandExp object and apply options
   const randexpObject = new RandExp(randexpPattern, flags)
+  const { defaultRangeAdd, defaultRangeSubtract, regexMax } = randexpOptions
+  if (defaultRangeAdd) randexpObject.defaultRange.add(defaultRangeAdd[0], defaultRangeAdd[1])
+  if (defaultRangeSubtract)
+    randexpObject.defaultRange.add(defaultRangeSubtract[0], defaultRangeSubtract[1])
+  if (regexMax) randexpObject.max = regexMax
+
   return { randexpObject, substitionMap, randexpPattern }
 }
 
@@ -67,3 +78,7 @@ export const parseGeneratorOutput = (counterOutput: string | number | IteratorYi
   if (counterOutput?.value) return counterOutput.value
   throw new Error('Invalid counter function, or Generator has reached limit')
 }
+
+// Magic strings
+export const ESCAPED_OPEN_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_0pen'
+export const ESCAPED_CLOSE_ANGLE_BRACKET = 'L1TERAl_b@CKSL@SH_cl0se'
