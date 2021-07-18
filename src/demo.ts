@@ -1,5 +1,5 @@
 import Pattern from './patterns'
-import fetch from 'node-fetch'
+import axios from 'axios'
 import { generatePlates } from './customCounters'
 const checkdigit = require('checkdigit')
 
@@ -19,8 +19,8 @@ const showBasicPattern = async () => {
 
 // Function to fetch an item from an online API
 const getAlbumString = async (key: number) => {
-  const data = await fetch('https://jsonplaceholder.typicode.com/albums')
-  return (await data.json())[key].title
+  const response = await axios.get('https://jsonplaceholder.typicode.com/albums')
+  return response.data[key].title
 }
 
 // More complex pattern with 2 custom replacers and a Intl formatted counter, and a non-standard incrementing function
