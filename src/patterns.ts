@@ -143,8 +143,9 @@ class PatternGenerator {
           numberFormat: this.numberFormat,
           length: counter?.length || 0,
         })
-        outputString = outputString.replace(
-          new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
+        outputString = replaceAll(
+          outputString,
+          new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`, 'g'),
           formattedCounter
         )
       }
@@ -162,8 +163,9 @@ class PatternGenerator {
     })
     const functionResults = await Promise.all(functionResultPromises) // for async functions
     functions.forEach(([index, _], i) => {
-      outputString = outputString.replace(
-        new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
+      outputString = replaceAll(
+        outputString,
+        new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`, 'g'),
         functionResults[i]
       )
     })
@@ -173,8 +175,9 @@ class PatternGenerator {
     dataProperties.forEach(([index, propertyObj]) => {
       if ('property' in propertyObj) {
         const { property } = propertyObj
-        outputString = outputString.replace(
-          new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
+        outputString = replaceAll(
+          outputString,
+          new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`, 'g'),
           extractObjectProperty(data, property as string, this.fallbackString)
         )
       }
