@@ -14,7 +14,8 @@
     "axios": "^0.21.1",
     "checkdigit": "^1.1.1",
     "lodash": "^4.17.21",
-    "randexp": "^0.5.3"
+    "randexp": "^0.5.3",
+    "xregexp": "^5.0.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
