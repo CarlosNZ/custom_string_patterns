@@ -18,6 +18,7 @@ import {
 } from './types'
 
 const replaceAll = require('string.prototype.replaceall')
+replaceAll.shim()
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
 

@@ -1,6 +1,7 @@
 import RandExp from 'randexp'
 import matchAll from 'string.prototype.matchall'
 import { SubstitutionMap, RandExpOptions } from './types'
+matchAll.shim()
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
