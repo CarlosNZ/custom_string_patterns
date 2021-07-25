@@ -1,5 +1,7 @@
 import RandExp from 'randexp'
 import { SubstitutionMap, RandExpOptions } from './types'
+// @ts-ignore
+import matchAll from 'string-match-all'
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
@@ -8,7 +10,12 @@ export const processInputPattern = (pattern: string | RegExp, randexpOptions: Ra
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
-  const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
+  // const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
+  // console.log('matches', Array.from())
+  // type Match = {}
+  const matches: any = Array.from(matchAll(source, /(?<!\\)<(.+?)(?<!\\)>/g)).entries()
+  // console.log('m', m)
+  // @ts-ignore
   for (const [index, match] of Array.from(matches)) {
     const fullMatchString = match[0]
     const captureGroup = match[1]

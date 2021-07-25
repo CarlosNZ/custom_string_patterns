@@ -1,5 +1,7 @@
 import RandExp from 'randexp'
 import { get as extractObjectProperty } from 'lodash'
+// @ts-ignore
+import replaceAll from 'string-replace-all-ponyfill'
 import {
   formatCounter,
   getArgs,
