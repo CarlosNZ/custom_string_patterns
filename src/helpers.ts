@@ -9,13 +9,11 @@ export const processInputPattern = (pattern: string | RegExp, randexpOptions: Ra
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
-  const m = XRegExp.match(source, /(?<!\\)<(.+?)(?<!\\)>/g)
-  const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
-  console.log('matches', Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)))
-  console.log('m', m)
-  for (const [index, match] of Array.from(matches)) {
-    const fullMatchString = match[0]
-    const captureGroup = match[1]
+  // XRegExp needed as lookahead/behind not supported in Safari 🙄
+  const matches = (XRegExp.match(source, /(?<!\\)<(.+?)(?<!\\)>/g) as string[]) || []
+  matches.forEach((match: string, index: number) => {
+    const fullMatchString = match
+    const captureGroup = match.slice(1, match.length - 1)
     const operator = captureGroup[0]
     if (operator === '+') {
       substitionMap[index] = { type: 'counter', length: captureGroup.match(/d/g)?.length || 0 }
@@ -27,7 +25,26 @@ export const processInputPattern = (pattern: string | RegExp, randexpOptions: Ra
       substitionMap[index] = { type: 'data', property: captureGroup }
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
-  }
+  })
+  // Re-enable once Safari supports lookaheads/behinds
+  // const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
+  // for (const [index, match] of matches || []) {
+  //   // for (const [index, match] of Array.from(matches)) {
+  //   const fullMatchString = match
+  //   const captureGroup = match
+  //   const operator = captureGroup[0]
+  //   if (operator === '+') {
+  //     substitionMap[index] = { type: 'counter', length: captureGroup.match(/d/g)?.length || 0 }
+  //   } else if (operator === '?') {
+  //     const [_, funcName, argsString] = captureGroup.match(/([A-z0-9]+)(\(.*\))?/) as Array<string>
+  //     substitionMap[index] = { type: 'function', funcName, args: splitArgs(argsString) }
+  //   } else {
+  //     // Remaining will be object properties to extract
+  //     substitionMap[index] = { type: 'data', property: captureGroup }
+  //   }
+  //   randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
+  // }
+
   // Replace literal backslashes with "magic strings" to preserve through so they don't get replaced by subsequent replacements
   randexpPattern = randexpPattern
     .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)

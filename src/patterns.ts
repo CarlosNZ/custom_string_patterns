@@ -1,4 +1,5 @@
 import RandExp from 'randexp'
+import XRegExp from 'xregexp'
 import { get as extractObjectProperty } from 'lodash'
 import {
   formatCounter,
@@ -141,7 +142,8 @@ class PatternGenerator {
           numberFormat: this.numberFormat,
           length: counter?.length || 0,
         })
-        outputString = outputString.replace(
+        outputString = XRegExp.replace(
+          outputString,
           new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
           formattedCounter
         )
@@ -160,7 +162,8 @@ class PatternGenerator {
     })
     const functionResults = await Promise.all(functionResultPromises) // for async functions
     functions.forEach(([index, _], i) => {
-      outputString = outputString.replace(
+      outputString = XRegExp.replace(
+        outputString,
         new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
         functionResults[i]
       )
@@ -171,7 +174,8 @@ class PatternGenerator {
     dataProperties.forEach(([index, propertyObj]) => {
       if ('property' in propertyObj) {
         const { property } = propertyObj
-        outputString = outputString.replace(
+        outputString = XRegExp.replace(
+          outputString,
           new RegExp(`(?<!\\\\)<${index}(?<!\\\\)>`),
           extractObjectProperty(data, property as string, this.fallbackString)
         )
