@@ -8,7 +8,11 @@ export const processInputPattern = (pattern: string | RegExp, randexpOptions: Ra
   const { source, flags } = patternRegex
   const substitionMap: SubstitutionMap = {}
   let randexpPattern = source
-  const matches = Array.from(source.matchAll(/(?<!\\)<(.+?)(?<!\\)>/g)).entries()
+    // Replace escaped "<" and ">" with "magic strings" to so they won't
+    // interfere with subsequent replacements
+    .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)
+    .replace(/\\>/g, ESCAPED_CLOSE_ANGLE_BRACKET)
+  const matches = Array.from(randexpPattern.matchAll(/<(.+?)>/g)).entries()
   for (const [index, match] of Array.from(matches)) {
     const fullMatchString = match[0]
     const captureGroup = match[1]
@@ -24,10 +28,6 @@ export const processInputPattern = (pattern: string | RegExp, randexpOptions: Ra
     }
     randexpPattern = randexpPattern.replace(fullMatchString, `<${index}>`)
   }
-  // Replace literal backslashes with "magic strings" to preserve through so they don't get replaced by subsequent replacements
-  randexpPattern = randexpPattern
-    .replace(/\\</g, ESCAPED_OPEN_ANGLE_BRACKET)
-    .replace(/\\>/g, ESCAPED_CLOSE_ANGLE_BRACKET)
 
   // Create RandExp object and apply options
   const randexpObject = new RandExp(randexpPattern, flags)
