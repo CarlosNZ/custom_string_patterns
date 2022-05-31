@@ -1,5 +1,5 @@
 import RandExp from 'randexp'
-import { get as extractObjectProperty } from 'lodash'
+import extractObjectProperty from 'object-property-extractor'
 import {
   formatCounter,
   getArgs,
@@ -14,6 +14,7 @@ import {
   PatternGeneratorOptions,
   SubstitutionMap,
   RandExpOptions,
+  GenerateArgs,
 } from './types'
 
 const defaultIncrement = (current: number | string) => Number(current) + 1
@@ -115,7 +116,7 @@ class PatternGenerator {
   }
 
   // Generate new string
-  public async gen(args: CustomArgs = {}) {
+  public async gen(args: GenerateArgs = {}) {
     const { shouldIncrement = true, customArgs = {}, data = {} } = args
 
     // Increment counter
@@ -167,7 +168,7 @@ class PatternGenerator {
         const { property } = propertyObj
         outputString = outputString.replace(
           new RegExp(`<${index}>`),
-          extractObjectProperty(data, property as string, this.fallbackString)
+          extractObjectProperty(data, property, this.fallbackString) as string
         )
       }
     })

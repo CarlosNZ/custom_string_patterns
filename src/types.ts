@@ -1,14 +1,15 @@
+type GenericObject = { [key: string]: GenericObject | unknown }
 export interface CustomReplacers {
   [key: string]: Function
 }
-
 export interface CustomArgs {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export interface GenerateArgs {
   shouldIncrement?: boolean
   customArgs?: CustomArgs
+  data?: GenericObject | unknown
 }
 
 export interface PatternGeneratorOptions {
