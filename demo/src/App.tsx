@@ -1,25 +1,44 @@
-import React from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { Box, Center } from '@chakra-ui/react'
+import Showcase from './PatternShowcase'
+import { generatePlates } from './helpers'
 
-function App() {
+const App = () => {
+  const plates = generatePlates()
+  const showcases = [
+    {
+      title: 'Simple serials',
+      description:
+        'Three random upper-case characters and a three-digit incrementing counter, separated by a hyphen',
+      pattern: /[A-Z]{3}-<+ddd>/,
+    },
+    {
+      title: 'Licence plates (NZ format)',
+      description: 'Three letters, 3 numbers',
+      pattern: /<+>/,
+      options: { getCounter: () => plates.next() },
+    },
+    {
+      title: 'Non-consecutive counter',
+      description: 'Three letters, 3 numbers',
+      pattern: /Serial-<+ddd>/,
+      options: { counterIncrement: (curr: number | string) => Number(curr) * 2 },
+    },
+    // Counter, set starting and increment values
+    // Call to an external database to perist count
+    // Valid credit card numbers
+    // Data replacement where user provides function arg
+    // Data replacement -- user provides Object values
+    // Data replacement -- take first chars of lastName and add number
+  ]
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Center>
+      <Box id="main-container" maxW={800}>
+        {showcases.map((showcase) => (
+          <Showcase {...showcase} key={showcase.title} />
+        ))}
+      </Box>
+    </Center>
   )
 }
 
