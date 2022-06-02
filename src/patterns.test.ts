@@ -70,6 +70,28 @@ test('Shorthand version of basicPattern2', () => {
   })
 })
 
+// Basic pattern generator with counter starting from 500 and incrementing in 25s.
+
+const basicPattern3 = new Pattern(/<+>_(A|B|C)/, {
+  counterInit: 500,
+  incrementStep: 25,
+})
+
+test('Generate single string - basicPattern3, non-consecutive increment step', () => {
+  return basicPattern3.gen().then((result: string) => {
+    expect(result).toMatch(/^500_(A|B|C)$/)
+  })
+})
+
+test('Generate 10 thousand more', () => {
+  for (let i = 1; i < 10000; i++) {
+    basicPattern3.gen()
+  }
+  return basicPattern3.gen().then((result: string) => {
+    expect(result).toMatch(/^250500_(A|B|C)$/)
+  })
+})
+
 // Function to fetch an item from an online API
 const getAlbumString = async (key: number) => {
   const response = await axios('https://jsonplaceholder.typicode.com/albums')
@@ -80,7 +102,7 @@ const getAlbumString = async (key: number) => {
 
 const fancyPattern = new Pattern(/^Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>$\)/, {
   counterInit: 5000,
-  counterIncrement: (prev) => Number(prev) + 100,
+  incrementFunction: (prev) => Number(prev) + 100,
   customReplacers: {
     album: getAlbumString,
     upper: (str: string) => str.toUpperCase(),
@@ -182,7 +204,7 @@ const dumbCounter = makeDumbCounter(99)
 const dumbPattern = new Pattern(/^<+ddddd>_(black|white)$/, {
   getCounter: () => dumbCounter.getCounter(),
   setCounter: (newCount: number) => dumbCounter.setCounter(newCount),
-  counterIncrement: (current: number | string) => 2 * Number(current),
+  incrementFunction: (current: number | string) => 2 * Number(current),
 })
 
 test('Separate getCounter, setCounter and incrementer methods', () => {
@@ -211,7 +233,7 @@ test('Shorthand version of separated methods', () => {
   return patternGen(/<+ddddd>_(black|white)/, {
     getCounter: () => dumbCounter.getCounter(),
     setCounter: (newCount: number) => dumbCounter.setCounter(newCount),
-    counterIncrement: (current: number | string) => 2 * Number(current),
+    incrementFunction: (current: number | string) => 2 * Number(current),
   }).then((result: string) => {
     expect(result).toMatch(/^202752_(black|white)$/)
   })

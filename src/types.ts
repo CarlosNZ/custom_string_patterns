@@ -15,8 +15,9 @@ export interface GenerateArgs {
 export interface PatternGeneratorOptions {
   getCounter?: Function
   setCounter?: Function
-  counterIncrement?: (input: string | number) => string | number
+  incrementFunction?: (input: string | number) => string | number
   counterInit?: number
+  incrementStep?: number
   customReplacers?: CustomReplacers
   numberFormat?: Intl.NumberFormat
   fallbackString?: string
