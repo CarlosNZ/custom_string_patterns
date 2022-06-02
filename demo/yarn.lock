@@ -4148,10 +4148,10 @@ csstype@^3.0.11, csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.0.tgz#4ddcac3718d787cf9df0d1b7d15033925c8f29f2"
   integrity sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==
 
-custom_string_patterns@^0.5.7:
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.5.7.tgz#9314fed13df387b630aeae318292b87c0e4e0f8b"
-  integrity sha512-c9enSVoSoP1sNZk5hWjfZWKN0Qc3sBHNucDO6WBkhNIqzQZxJvHUM70qFgIlmmuumrRuKNkN+5LxVPh9hzGC4g==
+custom_string_patterns@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.6.0.tgz#06b8ac7e5c385cfa76ce9cf62b77f98a1b49d5dc"
+  integrity sha512-wwmzgIo/1MNlAccnrUOSYFReBmtlzSmbyj8zT0Dt9vhXhWBoAYDcTrk/OCm25aX1agW85IJiTsj9a93FrfckGg==
   dependencies:
     axios "^0.27.2"
     checkdigit "^1.1.1"
