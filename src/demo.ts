@@ -8,12 +8,17 @@ const checkdigit = require('checkdigit')
 const basicPattern = new Pattern(/[A-Za-z]{4,9}-<+ddd>/)
 // Between 1 and 9 alphabet chars, followed by - and a number padded with leading 0s to 3 digits
 
+const basicPattern3 = new Pattern(/<+>_(A|B|C)/, {
+  counterInit: 500,
+  incrementStep: 25,
+})
+
 const showBasicPattern = async () => {
   console.log(
     'Basic pattern -- between 1-9 random alphabet chars, followed by an incrementing number padded with 0s, seperated by hyphen:'
   )
-  for (let i = 1; i < 20; i++) {
-    console.log(await basicPattern.gen())
+  for (let i = 1; i <= 50; i++) {
+    console.log(await basicPattern3.gen())
   }
 }
 
@@ -27,7 +32,7 @@ const getAlbumString = async (key: number) => {
 
 const fancyPattern = new Pattern(/Album name: <?album>, serial: [A-Z]{3}_<+d> \(<?upper>\)/, {
   counterInit: 5000,
-  counterIncrement: (prev) => Number(prev) + 100,
+  incrementFunction: (prev) => Number(prev) + 100,
   customReplacers: {
     album: getAlbumString,
     upper: (str: string) => str.toUpperCase(),
