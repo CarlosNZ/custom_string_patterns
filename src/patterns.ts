@@ -17,7 +17,11 @@ import {
   GenerateArgs,
 } from './types'
 
-const defaultIncrement = (current: number | string) => Number(current) + 1
+const defaultIncrement = (current: number | string, step: number = 1) => Number(current) + step
+
+// Wrapper to returnn the defaultIncrement function with the step-size backed in
+const getDefaultIncrementFn = (step: number) => (current: number | string) =>
+  defaultIncrement(current, step)
 
 function* simpleCounter(init: number, increment: Function) {
   let count = init
@@ -44,7 +48,7 @@ class PatternGenerator {
   randexpPattern: string
   getCounter: Function
   setCounter: Function | null
-  counterIncrement: (input: string | number) => string | number
+  incrementFunction: (input: string | number) => string | number
   internalCounter: number
   numberFormat?: Intl.NumberFormat
   customReplacers: CustomReplacers
@@ -56,8 +60,9 @@ class PatternGenerator {
     {
       getCounter,
       setCounter,
-      counterIncrement = defaultIncrement,
       counterInit = 1,
+      incrementStep = 1,
+      incrementFunction = getDefaultIncrementFn(incrementStep),
       customReplacers = {},
       numberFormat,
       fallbackString,
@@ -66,7 +71,7 @@ class PatternGenerator {
       regexMax,
     }: PatternGeneratorOptions = {}
   ) {
-    this.simpleCounter = simpleCounter(counterInit, counterIncrement)
+    this.simpleCounter = simpleCounter(counterInit, incrementFunction)
     this.getCounter = getCounter ?? (() => this.simpleCounter.next())
     this.setCounter = setCounter ?? null
     this.pattern = pattern
@@ -78,7 +83,7 @@ class PatternGenerator {
     this.randexpObject = randexpObject
     this.substitutionMap = substitionMap
     this.randexpPattern = randexpPattern
-    this.counterIncrement = counterIncrement
+    this.incrementFunction = incrementFunction
     this.internalCounter = counterInit
     this.numberFormat = numberFormat
     this.customReplacers = customReplacers
@@ -124,7 +129,7 @@ class PatternGenerator {
       ? parseGeneratorOutput(await this.getCounter())
       : this.internalCounter
     this.internalCounter = newCount
-    if (this.setCounter) await this.setCounter(await this.counterIncrement(newCount))
+    if (this.setCounter) await this.setCounter(await this.incrementFunction(newCount))
 
     // Create randexp string (with substitutions)
     const generatedRandexString = this.randexpObject.gen()

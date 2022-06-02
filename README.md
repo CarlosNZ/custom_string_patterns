@@ -124,13 +124,17 @@ Ideally, your `getCounter` function should also take care of incrementing the co
 
 Only required if your `getCounter()` function does not also take care of incrementing the counter, you'll need to provide another function to update it. If `setCounter` exists, the Pattern Generator will call it with the new counter value (usually `getCounter() + 1`) as its argument. Note that you should only use seperate get/set counter functions in an isolated system -- if your counter resides on a database that is accessed by multiple clients, you should retrieve and increment the counter atomically, or you'll likely run into concurrency issues.
 
-#### `counterIncrement ((input: string | number) => string | number)`
+#### `incrementFunction ((input: string | number) => string | number)`
 
-By default, if using a custom `setCounter` function, or the internal counter, counts will be incremented by `+1` every time. It's possible to over-ride this by providing a `counterIncrement()` function -- it takes the current counter value as input and should return the new value
+By default, if using a custom `setCounter` function, or the internal counter, counts will be incremented by `+1` every time. It's possible to over-ride this by providing a `incrementFunction()` function -- it takes the current counter value as input and should return the new value
 
 #### `counterInit: number`
 
 Only relevant if using the internal counter (i.e. no `getCounter` function is provided). This value simply specifies what number to start counting from -- the default is `1`.
+
+#### `incrementStep: number`
+
+Only relevant if using the internal counter (i.e. no `getCounter` function is provided). Specify the step unit for the counter -- default is `1`. Non-integer values can be provided, but you're likely to run into binary precision problems fairly quickly. This is basically a simpler alternative to providing an `incrementFunction` funtion (above) if all you want it to set a step value.
 
 #### `customReplacers { <funcName>: (args) => string | number, ... }`
 
