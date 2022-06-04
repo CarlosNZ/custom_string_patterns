@@ -107,3 +107,4 @@ dist
 build
 lib
 .DS_Store
+demo/src/secrets/firebaseConfig.json
