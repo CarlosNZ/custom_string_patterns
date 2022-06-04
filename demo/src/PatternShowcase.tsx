@@ -42,17 +42,17 @@ const PatternShowcase = ({
   const [stringPattern, setStringPattern] = useState<Pattern>(new Pattern(initialPattern, options))
   const [genCount, setGenCount] = useState(1)
   const [output, setOutput] = useState<string[]>([])
+  const [inProgress, setInProgress] = useState(false)
 
   const handleGenerate = async () => {
+    setInProgress(true)
     for (let i = 0; i < genCount; i++) {
       const index = output.length + i
       setOutput((current) => [...current, 'LOADING'])
-      stringPattern
-        .gen()
-        .then((res) =>
-          setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
-        )
+      const res = await stringPattern.gen()
+      setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
     }
+    setInProgress(false)
   }
 
   return (
@@ -97,7 +97,12 @@ const PatternShowcase = ({
               </NumberInputStepper>
             </NumberInput>{' '}
             <Text>more</Text>
-            <Button colorScheme="blue" onClick={handleGenerate} textStyle="mono">
+            <Button
+              colorScheme="blue"
+              onClick={handleGenerate}
+              textStyle="mono"
+              disabled={inProgress}
+            >
               {'.gen()'}
             </Button>
           </Flex>
