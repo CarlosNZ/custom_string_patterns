@@ -8,6 +8,11 @@ const theme = extendTheme({
   styles: {
     global: {
       'html, body': { bgColor: 'background' },
+      a: {
+        color: 'brandDark.700',
+        fontWeight: 600,
+        _hover: { color: 'brandDark.600', textDecoration: 'underline' },
+      },
     },
   },
   config: {
