@@ -9,7 +9,7 @@ export interface CustomArgs {
 export interface GenerateArgs {
   shouldIncrement?: boolean
   customArgs?: CustomArgs
-  data?: GenericObject | unknown
+  data?: GenericObject
 }
 
 export interface PatternGeneratorOptions {
