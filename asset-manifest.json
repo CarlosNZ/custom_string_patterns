@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/custom_string_patterns/static/css/main.e6c13ad2.css",
-    "main.js": "/custom_string_patterns/static/js/main.011397dc.js",
+    "main.js": "/custom_string_patterns/static/js/main.9601a376.js",
     "index.html": "/custom_string_patterns/index.html",
     "main.e6c13ad2.css.map": "/custom_string_patterns/static/css/main.e6c13ad2.css.map",
-    "main.011397dc.js.map": "/custom_string_patterns/static/js/main.011397dc.js.map"
+    "main.9601a376.js.map": "/custom_string_patterns/static/js/main.9601a376.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.011397dc.js"
+    "static/js/main.9601a376.js"
   ]
 }
