@@ -6,7 +6,7 @@ const app = initializeApp(firebaseConfig)
 
 const db = getFirestore(app)
 
-export const getCounter = async (counterName: string) => {
+export const getDatabaseCounter = async (counterName: string) => {
   const counterRef = doc(db, 'counters', counterName)
 
   try {

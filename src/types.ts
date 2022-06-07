@@ -1,4 +1,4 @@
-type GenericObject = { [key: string]: GenericObject | unknown }
+export type GenericObject = { [key: string]: GenericObject | unknown }
 export interface CustomReplacers {
   [key: string]: Function
 }

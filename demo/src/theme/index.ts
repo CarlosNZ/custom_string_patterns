@@ -7,7 +7,7 @@ import components from './components'
 const theme = extendTheme({
   styles: {
     global: {
-      'html, body': { bgColor: 'background' },
+      'html, body': { bgColor: 'background', fontSize: '15px' },
       a: {
         color: 'brandDark.700',
         fontWeight: 600,
