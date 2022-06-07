@@ -64,6 +64,23 @@ const App = () => {
             <Showcase {...example} key={example.title} />
           ))}
         </Stack>
+        <Text align="center" fontSize="sm" mt={5} mb={5}>
+          <a
+            href="https://github.com/CarlosNZ/custom_string_patterns"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Github
+          </a>
+          &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+          <a
+            href="https://www.npmjs.com/package/custom_string_patterns"
+            target="_blank"
+            rel="noreferrer"
+          >
+            npm
+          </a>
+        </Text>
       </Box>
     </Center>
   )
