@@ -1,5 +1,5 @@
 import RandExp from 'randexp'
-import { SubstitutionMap, RandExpOptions } from './types'
+import { SubstitutionMap, RandExpOptions, GenericObject } from './types'
 
 // Turns input pattern into a randexp object with indexed substitions for
 // replacers and counters
@@ -64,11 +64,14 @@ export const getArgs = (
   funcName: string,
   argIndexes: number[],
   customArgs: any,
-  captureGroups: string[]
+  captureGroups: string[],
+  data: GenericObject | undefined
 ) => {
   // Prioritise custom arguments over capture group args
   if (customArgs[funcName]) return [customArgs[funcName]]
-  return argIndexes.map((i) => captureGroups[i - 1])
+  const args: (string | GenericObject)[] = argIndexes.map((i) => captureGroups[i - 1])
+  if (data) args.push(data as GenericObject)
+  return args
 }
 
 // Allows a generator to be used as a counter directly, rather than needing to
