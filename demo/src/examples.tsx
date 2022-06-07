@@ -64,6 +64,7 @@ pattern.gen()`,
     options: { getCounter: () => plates.next() },
     resetCounterMethod: (newStartVal: string) => (plates = generatePlates(newStartVal)),
     counterInputInit: 'AAA100',
+    hideCounterReset: true,
     codeStringTemplate: `// Custom plate number-generating function
   const plates = generatePlates("\${counterInit}") // defined elsewhere
 
