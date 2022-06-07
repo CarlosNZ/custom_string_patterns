@@ -281,6 +281,22 @@ test('Use regex output as arguments in custom replacer functions -- dynamicArgPa
   })
 })
 
+// Use data object as parameter in custom replacer
+const dataAsArgsPattern = new Pattern(/^<?getInits>-<+ddd>$/, {
+  customReplacers: {
+    getInits: (data: any) => (data.user.firstName[0] + data.user.lastName[0]).toUpperCase(),
+  },
+  counterInit: 100,
+})
+
+test('Use "data" object as parameters for custom function', () => {
+  return dataAsArgsPattern
+    .gen({ data: { user: { firstName: 'Boba', lastName: 'Fett' } } })
+    .then((result: string) => {
+      expect(result).toBe('BF-100')
+    })
+})
+
 // Generate random credit card numbers, including correct check digit
 
 const calculateCheckDigit = (digits: string[]) =>

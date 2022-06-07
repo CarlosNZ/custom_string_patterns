@@ -122,7 +122,7 @@ class PatternGenerator {
 
   // Generate new string
   public async gen(args: GenerateArgs = {}) {
-    const { shouldIncrement = true, customArgs = {}, data = {} } = args
+    const { shouldIncrement = true, customArgs = {}, data } = args
 
     // Increment counter
     const newCount = shouldIncrement
@@ -156,7 +156,7 @@ class PatternGenerator {
     const functionResultPromises = functions.map(([index, f]) => {
       if ('funcName' in f) {
         const funcName = f?.funcName
-        const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches)
+        const args = getArgs(funcName as string, f?.args, customArgs, captureGroupMatches, data)
         if (!funcName) throw new Error('Missing Function name')
         return this.customReplacers[funcName](...args)
       }
@@ -167,16 +167,20 @@ class PatternGenerator {
     })
 
     // Extract data properties
-    const dataProperties = Object.entries(this.substitutionMap).filter((f) => f[1].type === 'data')
-    dataProperties.forEach(([index, propertyObj]) => {
-      if ('property' in propertyObj) {
-        const { property } = propertyObj
-        outputString = outputString.replace(
-          new RegExp(`<${index}>`),
-          extractObjectProperty(data, property, this.fallbackString) as string
-        )
-      }
-    })
+    if (data) {
+      const dataProperties = Object.entries(this.substitutionMap).filter(
+        (f) => f[1].type === 'data'
+      )
+      dataProperties.forEach(([index, propertyObj]) => {
+        if ('property' in propertyObj) {
+          const { property } = propertyObj
+          outputString = outputString.replace(
+            new RegExp(`<${index}>`),
+            extractObjectProperty(data, property, this.fallbackString) as string
+          )
+        }
+      })
+    }
 
     return outputString
       .replace(new RegExp(ESCAPED_OPEN_ANGLE_BRACKET, 'g'), '<')
