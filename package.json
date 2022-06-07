@@ -28,7 +28,7 @@
     "test": "jest",
     "build": "rimraf ./build && tsc",
     "dev": "ts-node ./src/dev.ts",
-    "demo": "ts-node ./src/runDemo.ts",
+    "demo": "cd demo && yarn start",
     "prepublishOnly": "yarn build"
   },
   "keywords": [

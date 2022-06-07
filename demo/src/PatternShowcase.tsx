@@ -105,7 +105,7 @@ const PatternShowcase = ({
         setOutput((current) => [...current, 'LOADING'])
         const res = await stringPattern.gen({
           customArgs,
-          data: customDataString ? JSON.parse(customDataString) : {},
+          data: customDataString ? JSON.parse(customDataString) : undefined,
         })
         setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
       } catch (err: any) {
@@ -123,6 +123,8 @@ const PatternShowcase = ({
       setDataInputError(false)
     } catch {
       setDataInputError(true)
+    } finally {
+      setUpdate(true)
     }
   }
 
@@ -142,13 +144,17 @@ const PatternShowcase = ({
       <Stack spacing={3}>
         <Text>{description}</Text>
         <Flex gap={5} wrap="wrap" style={{ marginBottom: 10 }}>
-          <Box minW="75%" maxW="80%" fontSize="0.9em">
-            <SyntaxHighlighter language="javascript" wrapLongLines>
-              {codeString || 'tbc'}
+          <Box minW="75%" maxW={585} fontSize="0.9em" style={{ wordBreak: 'break-word' }}>
+            <SyntaxHighlighter
+              language="javascript"
+              wrapLongLines
+              customStyle={{ borderRadius: 8 }}
+            >
+              {codeString}
             </SyntaxHighlighter>
           </Box>
           {!hideCounterReset && (
-            <VStack spacing={1} align="center" flexGrow={1}>
+            <VStack spacing={1} align="flex-start" flexGrow={1}>
               <Text fontSize="sm">Reset counter to:</Text>
               <Input
                 fontSize="sm"
@@ -188,6 +194,7 @@ const PatternShowcase = ({
                   <Text>{key}:</Text>
                   <Input
                     fontSize="sm"
+                    minW={150}
                     defaultValue={value}
                     onBlur={(e) => {
                       setCustomArgs((curr) => ({ ...curr, [key]: e.target.value }))
@@ -199,7 +206,7 @@ const PatternShowcase = ({
             </VStack>
           )}
           {customDataString && (
-            <VStack align="flex-start" maxW="50%" flexGrow={1}>
+            <VStack align="flex-start" maxW={360} flexGrow={1}>
               <Text>
                 <strong>Data</strong>
               </Text>
@@ -227,6 +234,7 @@ const PatternShowcase = ({
             <Input
               fontSize="sm"
               defaultValue={String(stringPattern.pattern)}
+              textStyle="mono"
               width="auto"
               onBlur={(e) => {
                 stringPattern.setPattern(new RegExp(extractRegExString(e.target.value)))
@@ -238,7 +246,7 @@ const PatternShowcase = ({
             <Text>Generate</Text>
             <NumberInput
               size="sm"
-              maxW={16}
+              maxW={20}
               min={1}
               value={genCount}
               onChange={(val) => setGenCount(Number(val))}

@@ -47,14 +47,14 @@ pattern.gen()`,
     options: { getCounter: () => getDatabaseCounter('simple_demo') },
     hideCounterReset: true,
     codeStringTemplate: `const pattern = new Pattern(\${pattern}, {
-          getCounter: () => getDatabaseCounter('simple_demo')
-      })
+            getCounter: () => getDatabaseCounter('simple_demo')
+        })
 
-// When the .gen() method is called, the provided getCounter() method
-// is used instead of the default internal counter.
-// The external database can't have it's counter reset at all.
+  // When the .gen() method is called, the provided getCounter()
+  // method is used instead of the default internal counter.
+  // The external database can't have it's counter reset at all.
 
-pattern.gen()`,
+  pattern.gen()`,
   },
   {
     title: 'Licence plates (NZ format)',
@@ -65,16 +65,16 @@ pattern.gen()`,
     resetCounterMethod: (newStartVal: string) => (plates = generatePlates(newStartVal)),
     counterInputInit: 'AAA100',
     codeStringTemplate: `// Custom plate number-generating function
-const plates = generatePlates("\${counterInit}") // defined elsewhere
+  const plates = generatePlates("\${counterInit}") // defined elsewhere
 
-const pattern = new Pattern(\${pattern}\${options})
+  const pattern = new Pattern(\${pattern}\${options})
 
-// The getCounter method can be any function that returns a new
-// string when called, so a custom sequence generator can be used,
-// in this case a generator function that returns NZ-formatted
-// licence plates
+  // The getCounter method can be any function that returns a new
+  // string when called, so a custom sequence generator can be used,
+  // in this case a generator function that returns NZ-formatted
+  // licence plates
 
-pattern.gen()`,
+  pattern.gen()`,
     codeStringFixedOptions: `getCounter: () => plates.next()`,
   },
   {
@@ -85,7 +85,7 @@ pattern.gen()`,
     counterInputInit: '100',
     codeStringTemplate: `const pattern = new Pattern(\${pattern}\${options})
 
-pattern.gen()`,
+  pattern.gen()`,
     codeStringFixedOptions: 'incrementStep: 100,',
   },
   {
@@ -99,14 +99,14 @@ pattern.gen()`,
     },
     customArgsInit: { surnameExtract: 'Smith' },
     codeStringTemplate: `//Custom replacement function to return first 3 chars of an input string
-const surnameExtract = (name) => name.slice(0, 3).toUpperCase()
+  const surnameExtract = (name) => name.slice(0, 3).toUpperCase()
 
-const pattern = new Pattern(\${pattern}\${options}),
+  const pattern = new Pattern(\${pattern}\${options}),
 
-// The argument for the extraction function is provided to each
-// .gen() call so can be different for every generated string
+  // The argument for the extraction function is provided to each
+  // .gen() call so can be different for every generated string
 
-pattern.gen({ custom Args: {surnameExtract: \${arg1} }} )`,
+  pattern.gen({ custom Args: {surnameExtract: \${arg1} }} )`,
     codeStringFixedOptions: `customReplacers: { surnameExtract }`,
   },
   {
@@ -116,10 +116,10 @@ pattern.gen({ custom Args: {surnameExtract: \${arg1} }} )`,
     customDataInit: { name: { first: 'Boba', last: 'Fett' } },
     codeStringTemplate: `const pattern = new Pattern(\${pattern}\${options}),
 
-// We can extract any deeply nested property from "data"
-// object passed to the .gen() method
+  // We can extract any deeply nested property from "data"
+  // object passed to the .gen() method
 
-pattern.gen({ data: \${data} })`,
+  pattern.gen({ data: \${data} })`,
   },
   {
     title: 'International formatting',
@@ -143,33 +143,36 @@ pattern.gen({ data: \${data} })`,
     },
     counterInputInit: '1000',
     codeStringTemplate: `const pattern = new Pattern(\${pattern}\${options})
-    
-// Note the thousands separator that is added, as well as the
-// currency symbol and decimal notation
 
-pattern.gen()`,
+  // Note the thousands separator that is added, as well as the
+  // currency symbol and decimal notation
+
+  pattern.gen()`,
     codeStringFixedOptions:
       "numberFormat: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),",
   },
   {
-    title: 'Combintation string',
+    title: 'Combination string',
     description:
       "A combination of a user's initials, a 4-digit counter, an ISO timestamp of the current time and a random 6-char string",
-    pattern: /<?getInit>-<+dddd>-<?getISOTime>-[A-z]{6}/,
+    pattern: /<?getInits>-<+dddd>-<?getISOTime>-[A-Za-z!@#$%?]{6}/,
     options: {
       customReplacers: {
-        getInit: (user: any) => (user.firstName[0] + user.lastName[0]).toUpperCase(),
+        getInits: (data: any) => (data.user.firstName[0] + data.user.lastName[0]).toUpperCase(),
         getISOTime: () => new Date().toISOString(),
       },
     },
+    customDataInit: { user: { firstName: 'Luke', lastName: 'Skywalker' } },
     codeStringTemplate: `const pattern = new Pattern(\${pattern}\${options})
-    
-// Note the thousands separator that is added, as well as the
-// currency symbol and decimal notation
 
-pattern.gen()`,
-    codeStringFixedOptions:
-      "numberFormat: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),",
+  // Note that in this case the argument for the "genInits" function
+  // is the "data" object itself.
+
+  pattern.gen({ data: \${data} })`,
+    codeStringFixedOptions: `customReplacers: {
+        getInits: (data) => (data.user.firstName[0] + data.user.lastName[0]).toUpperCase(),
+        getISOTime: () => new Date().toISOString()
+      },`,
   },
   {
     title: 'Valid credit card numbers',
@@ -199,38 +202,33 @@ pattern.gen()`,
       },
     },
     codeStringTemplate: `// Function to create a single-digit checksum that makes the whole number valid
-// Uses https://www.npmjs.com/package/checkdigit
-const generateChecksum = (digits) =>
-  checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
+  // Uses https://www.npmjs.com/package/checkdigit
+  const generateChecksum = (digits) =>
+    checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
 
-// Determines what type of credit card based on first digit
-// https://www.freeformatter.com/credit-card-number-generator-validator.html
-const cardTypeLookup = (digits) => {
-  const initDigit = digits[0]
-  if (initDigit === '4') return 'Visa'
-  if (initDigit === '5') return 'Mastercard'
-  return 'Unknown 🤷‍♂️'
-}
+  // Determines what type of credit card based on first digit
+  // https://www.freeformatter.com/credit-card-number-generator-validator.html
+  const cardTypeLookup = (digits) => {
+    const initDigit = digits[0]
+    if (initDigit === '4') return 'Visa'
+    if (initDigit === '5') return 'Mastercard'
+    return 'Unknown 🤷‍♂️'
+  }
 
-// This pattern uses a more complicated Regex to generate the random
-// strings, then uses two custom replacement functions -- one to
-// generate the check digit and one to show which type of
-// credit card it is
-const pattern = new Pattern(\${pattern}\${options}),
+  // This pattern uses a more complicated Regex to generate the random
+  // strings, then uses two custom replacement functions -- one to
+  // generate the check digit and one to show which type of
+  // credit card it is
+  const pattern = new Pattern(\${pattern}\${options}),
 
-// Note also that this time we don't pass in arguments to the
-// functions -- they are extracted automatically from the
-// generated string using Regex capture groups
+  // Note also that this time we don't pass in arguments to the
+  // functions -- they are extracted automatically from the
+  // generated string using Regex capture groups
 
-
-pattern.gen()`,
+  pattern.gen()`,
     codeStringFixedOptions: `customReplacers: {
-      checksum: (...args) => generateChecksum(args),
-      whichCard: cardTypeLookup,
-    },`,
+        checksum: (...args) => generateChecksum(args),
+        whichCard: cardTypeLookup,
+      },`,
   },
-  // Data replacement where user provides function arg
-  // Data replacement -- user provides Object values
-  // Currency
-  // Unix timestamp in string
 ]

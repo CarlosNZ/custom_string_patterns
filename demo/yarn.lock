@@ -4636,10 +4636,10 @@ csstype@^3.0.11, csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.0.tgz#4ddcac3718d787cf9df0d1b7d15033925c8f29f2"
   integrity sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==
 
-custom_string_patterns@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.6.0.tgz#06b8ac7e5c385cfa76ce9cf62b77f98a1b49d5dc"
-  integrity sha512-wwmzgIo/1MNlAccnrUOSYFReBmtlzSmbyj8zT0Dt9vhXhWBoAYDcTrk/OCm25aX1agW85IJiTsj9a93FrfckGg==
+custom_string_patterns@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.6.1.tgz#f3d3fc38b307a0b5aa1e8bac9e7ccd425259133a"
+  integrity sha512-iq5ijNZlhG0cbOGK6csnv0y3m0YeXq1h3JQFMxNM5dDkjP954qNJyJjvu/v+LsNhOr+WkWkKD43aHiMcxFCZfw==
   dependencies:
     axios "^0.27.2"
     checkdigit "^1.1.1"
