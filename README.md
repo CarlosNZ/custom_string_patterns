@@ -1,6 +1,8 @@
 # Custom String Patterns
 
-Generate random and incrementing string patterns using regex and custom functions
+Generate random and incrementing string sequences using regex and custom functions.
+
+Demo / Playground available at: https://carlosnz.github.io/custom_string_patterns
 
 **custom_string_patterns** is based on [randexp](https://github.com/fent/randexp.js) by [@fent](https://github.com/fent) -- a package to generate random strings that match given regular expressions. custom_string_patterns takes it a step further by providing a mechanism for string patterns to contain incrementing values and custom replacement functions beyond what regex can do.
 
