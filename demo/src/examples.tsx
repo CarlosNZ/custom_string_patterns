@@ -1,4 +1,4 @@
-import { Box, Center, Heading, Text, Stack, Icon, Flex } from '@chakra-ui/react'
+import { Text } from '@chakra-ui/react'
 import { generatePlates } from './helpers'
 import { ShowcaseProps } from './PatternShowcase'
 // @ts-ignore
