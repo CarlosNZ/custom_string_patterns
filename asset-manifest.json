@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/custom_string_patterns/static/css/main.e6c13ad2.css",
+    "main.js": "/custom_string_patterns/static/js/main.e8ff156e.js",
+    "index.html": "/custom_string_patterns/index.html",
+    "main.e6c13ad2.css.map": "/custom_string_patterns/static/css/main.e6c13ad2.css.map",
+    "main.e8ff156e.js.map": "/custom_string_patterns/static/js/main.e8ff156e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.e8ff156e.js"
+  ]
+}
