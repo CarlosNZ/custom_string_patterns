@@ -2,6 +2,7 @@
   "name": "custom-string-patterns-web-demo",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://carlosnz.github.io/custom_string_patterns/",
   "dependencies": {
     "@chakra-ui/react": "^2.1.2",
     "@emotion/react": "^11",
@@ -25,15 +26,18 @@
     "@types/react": "^18.0.10",
     "@types/react-dom": "^18.0.5",
     "@types/react-syntax-highlighter": "^15.5.1",
+    "gh-pages": "^4.0.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.7.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='../docs' react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
