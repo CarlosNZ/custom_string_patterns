@@ -99,20 +99,30 @@ const PatternShowcase = ({
 
   const handleGenerate = async () => {
     setInProgress(true)
+    const newStrings: string[] = []
+    const t = setInterval(() => {
+      // We want to update state periodically. Because If we don't, then there's
+      // no UI updates for slow generators (e.g. database queries). But if we
+      // update after every iteration then, when the counter is fast (i.e.
+      // internal counter), React freaks out at being updated dozens of times in
+      // rapid succession.
+      setOutput((curr) => [...curr, ...newStrings])
+      newStrings.length = 0
+    }, 1000)
     for (let i = 0; i < genCount; i++) {
       try {
-        const index = output.length + i
-        setOutput((current) => [...current, 'LOADING'])
         const res = await stringPattern.gen({
           customArgs,
           data: customDataString ? JSON.parse(customDataString) : undefined,
         })
-        setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
+        newStrings.push(res)
       } catch (err: any) {
-        setOutput((current) => [...current.slice(0, -1), 'ERROR'])
+        newStrings.push('ERROR')
         console.log(err.message)
       }
     }
+    clearInterval(t)
+    setOutput((curr) => [...curr, ...newStrings])
     setInProgress(false)
   }
 
@@ -260,11 +270,12 @@ const PatternShowcase = ({
             <Text>more:</Text>
             <Button
               colorScheme="blue"
+              width={150}
               onClick={handleGenerate}
               textStyle="mono"
               disabled={inProgress}
             >
-              {'pattern.gen()'}
+              {inProgress ? <Spinner /> : 'pattern.gen()'}
             </Button>
             <Button colorScheme="blue" onClick={() => setOutput([])}>
               Clear
@@ -294,7 +305,7 @@ const PatternShowcase = ({
                 textAlign="center"
                 style={{ textTransform: 'none' }}
               >
-                {result === 'LOADING' ? <Spinner size="sm" /> : result}
+                {result}
               </Badge>
             </Animate>
           ))}
