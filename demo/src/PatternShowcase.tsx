@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Pattern from 'custom_string_patterns'
 import {
   Box,
@@ -77,7 +77,7 @@ const PatternShowcase = ({
     })
   )
   const [dataInputError, setDataInputError] = useState(false)
-  const [output, setOutput] = useState<string[]>([])
+  const [output, setOutput] = useState<any[]>([])
   const [inProgress, setInProgress] = useState(false)
   const [update, setUpdate] = useState(false)
 
@@ -100,18 +100,10 @@ const PatternShowcase = ({
   const handleGenerate = async () => {
     setInProgress(true)
     for (let i = 0; i < genCount; i++) {
-      try {
-        const index = output.length + i
-        setOutput((current) => [...current, 'LOADING'])
-        const res = await stringPattern.gen({
-          customArgs,
-          data: customDataString ? JSON.parse(customDataString) : undefined,
-        })
-        setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
-      } catch (err: any) {
-        setOutput((current) => [...current.slice(0, -1), 'ERROR'])
-        console.log(err.message)
-      }
+      const result = await stringPattern.gen()
+      setOutput((current) => {
+        return [...current, <StringBadge value={result} key={result} />]
+      })
     }
     setInProgress(false)
   }
@@ -274,7 +266,7 @@ const PatternShowcase = ({
       </Stack>
       {output.length > 0 && (
         <Wrap mt={4} spacing={3}>
-          {output.map((result, index) => (
+          {output.map((badge, index) => (
             <Animate
               key={index}
               sequenceIndex={index}
@@ -284,18 +276,7 @@ const PatternShowcase = ({
               duration={0.5}
               delay={(index - (output.length - genCount)) * calculateDelay(genCount)}
             >
-              <Badge
-                colorScheme={result === 'ERROR' ? 'red' : 'blue'}
-                fontSize="1em"
-                py={1}
-                px={3}
-                borderRadius={6}
-                minW={120}
-                textAlign="center"
-                style={{ textTransform: 'none' }}
-              >
-                {result === 'LOADING' ? <Spinner size="sm" /> : result}
-              </Badge>
+              {badge}
             </Animate>
           ))}
         </Wrap>
@@ -303,6 +284,24 @@ const PatternShowcase = ({
     </Box>
   )
 }
+
+interface BadgeProps {
+  value: string
+}
+const StringBadge = ({ value }: BadgeProps) => (
+  <Badge
+    colorScheme={value === 'ERROR' ? 'red' : 'blue'}
+    fontSize="1em"
+    py={1}
+    px={3}
+    borderRadius={6}
+    minW={120}
+    textAlign="center"
+    style={{ textTransform: 'none' }}
+  >
+    {value}
+  </Badge>
+)
 
 export default PatternShowcase
 
