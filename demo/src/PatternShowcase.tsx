@@ -99,20 +99,30 @@ const PatternShowcase = ({
 
   const handleGenerate = async () => {
     setInProgress(true)
+    const newStrings: string[] = []
     for (let i = 0; i < genCount; i++) {
+      const startTime = performance.now()
       try {
-        const index = output.length + i
-        setOutput((current) => [...current, 'LOADING'])
         const res = await stringPattern.gen({
           customArgs,
           data: customDataString ? JSON.parse(customDataString) : undefined,
         })
-        setOutput((curr) => [...curr.slice(0, index), res, ...curr.slice(index + 1)])
+        // For React performance reasons, fast generators should push
+        // to output all at once when done, but slow ones (e.g. database
+        // queries) should push one at a time so UI gets updated
+        if (performance.now() - startTime > 100) {
+          setOutput((curr) => [...curr, ...newStrings, res])
+          newStrings.length = 0
+        } else newStrings.push(res)
       } catch (err: any) {
-        setOutput((current) => [...current.slice(0, -1), 'ERROR'])
+        if (performance.now() - startTime > 100) {
+          setOutput((curr) => [...curr, ...newStrings, 'ERROR'])
+          newStrings.length = 0
+        } else newStrings.push('ERROR')
         console.log(err.message)
       }
     }
+    setOutput((curr) => [...curr, ...newStrings])
     setInProgress(false)
   }
 
@@ -260,11 +270,12 @@ const PatternShowcase = ({
             <Text>more:</Text>
             <Button
               colorScheme="blue"
+              width={150}
               onClick={handleGenerate}
               textStyle="mono"
               disabled={inProgress}
             >
-              {'pattern.gen()'}
+              {inProgress ? <Spinner /> : 'pattern.gen()'}
             </Button>
             <Button colorScheme="blue" onClick={() => setOutput([])}>
               Clear

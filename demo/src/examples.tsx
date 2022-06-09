@@ -40,7 +40,7 @@ pattern.gen()`,
           getCounter
         </Text>{' '}
         method uses a counter from an external database so its value is persisted independently of
-        this module.
+        this particular instance.
       </span>
     ),
     pattern: /Count: <+dddd>/,
@@ -64,7 +64,6 @@ pattern.gen()`,
     options: { getCounter: () => plates.next() },
     resetCounterMethod: (newStartVal: string) => (plates = generatePlates(newStartVal)),
     counterInputInit: 'AAA100',
-    hideCounterReset: true,
     codeStringTemplate: `// Custom plate number-generating function
   const plates = generatePlates("\${counterInit}") // defined elsewhere
 
@@ -202,6 +201,7 @@ pattern.gen()`,
         whichCard: cardTypeLookup,
       },
     },
+    hideCounterReset: true,
     codeStringTemplate: `// Function to create a single-digit checksum that makes the whole number valid
   // Uses https://www.npmjs.com/package/checkdigit
   const generateChecksum = (digits) =>
