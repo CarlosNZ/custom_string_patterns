@@ -100,28 +100,28 @@ const PatternShowcase = ({
   const handleGenerate = async () => {
     setInProgress(true)
     const newStrings: string[] = []
+    const t = setInterval(() => {
+      // We want to update state periodically. Because If we don't, then there's
+      // no UI updates for slow generators (e.g. database queries). But if we
+      // update after every iteration then, when the counter is fast (i.e.
+      // internal counter), React freaks out at being updated dozens of times in
+      // rapid succession.
+      setOutput((curr) => [...curr, ...newStrings])
+      newStrings.length = 0
+    }, 1000)
     for (let i = 0; i < genCount; i++) {
-      const startTime = performance.now()
       try {
         const res = await stringPattern.gen({
           customArgs,
           data: customDataString ? JSON.parse(customDataString) : undefined,
         })
-        // For React performance reasons, fast generators should push
-        // to output all at once when done, but slow ones (e.g. database
-        // queries) should push one at a time so UI gets updated
-        if (performance.now() - startTime > 100) {
-          setOutput((curr) => [...curr, ...newStrings, res])
-          newStrings.length = 0
-        } else newStrings.push(res)
+        newStrings.push(res)
       } catch (err: any) {
-        if (performance.now() - startTime > 100) {
-          setOutput((curr) => [...curr, ...newStrings, 'ERROR'])
-          newStrings.length = 0
-        } else newStrings.push('ERROR')
+        newStrings.push('ERROR')
         console.log(err.message)
       }
     }
+    clearInterval(t)
     setOutput((curr) => [...curr, ...newStrings])
     setInProgress(false)
   }
@@ -305,7 +305,7 @@ const PatternShowcase = ({
                 textAlign="center"
                 style={{ textTransform: 'none' }}
               >
-                {result === 'LOADING' ? <Spinner size="sm" /> : result}
+                {result}
               </Badge>
             </Animate>
           ))}
