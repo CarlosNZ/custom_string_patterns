@@ -2,6 +2,9 @@ import { Box, Center, Heading, Text, Stack, Icon, Flex } from '@chakra-ui/react'
 import { FaNpm, FaExternalLinkAlt, FaGithub } from 'react-icons/fa'
 import Showcase from './PatternShowcase'
 import { examples } from './examples'
+import config from '../package.json'
+
+const stringPatternVersion = config.dependencies.custom_string_patterns.replace('^', '')
 
 const App = () => {
   return (
@@ -57,6 +60,11 @@ const App = () => {
           <Text>
             Generate a range of string patterns below — and edit the pattern string to see the
             resulting effects:
+          </Text>
+          <Text fontSize="sm">
+            <em>
+              (Uses <strong>custom_string_patterns</strong> v{stringPatternVersion})
+            </em>
           </Text>
         </Box>
         <Stack spacing={8} display="flex" flexDirection="column" alignItems="center">

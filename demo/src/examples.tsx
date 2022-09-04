@@ -203,9 +203,9 @@ pattern.gen()`,
     },
     hideCounterReset: true,
     codeStringTemplate: `// Function to create a single-digit checksum that makes the whole number valid
-  // Uses https://www.npmjs.com/package/checkdigit
+// Uses https://www.npmjs.com/package/checkdigit
   const generateChecksum = (digits) =>
-    checkdigit.mod10.create(digits.join('').replace(/\W/g, ''))
+    checkdigit.mod10.create(digits.join('').replace(//g, ''))
 
   // Determines what type of credit card based on first digit
   // https://www.freeformatter.com/credit-card-number-generator-validator.html

@@ -4647,12 +4647,12 @@ csstype@^3.0.11, csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.0.tgz#4ddcac3718d787cf9df0d1b7d15033925c8f29f2"
   integrity sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==
 
-custom_string_patterns@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.6.2.tgz#a18b95094939216215fdebc6322654164d5c6e43"
-  integrity sha512-uzpJ/L27m3HIjaY/ZbydzmjHnx1G5rck4R7WjT0SMQ3ugR8NO6+hNKaQCVjmkGkLg5jCR6D/QvYlPLn408Ia9Q==
+custom_string_patterns@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/custom_string_patterns/-/custom_string_patterns-0.6.4.tgz#e15363f268a1ff1ea184d370ba5155fb51aa53ba"
+  integrity sha512-grNgIOYXvBWFsIhmaqO2eUbPrHftvHSGEMmzCHjGHYntDYKShHXUJs20is+hOKpThsAhJLOKkG5SmJJ/6clv2Q==
   dependencies:
-    object-property-extractor "^1.0.2"
+    object-property-extractor "^1.0.3"
     randexp "^0.5.3"
 
 damerau-levenshtein@^1.0.7:
@@ -7651,10 +7651,10 @@ object-keys@^1.1.1:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
-object-property-extractor@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/object-property-extractor/-/object-property-extractor-1.0.2.tgz#1e2d2f1b779fcdc6eae4b78de28072b1cc9d733b"
-  integrity sha512-k2MP6jovoeyh5HC8s22HwLtMA21v+8LoDFei1X6yN47IPHQUqRzyXUqq9ZbDSkoeGVDT5LMrcMBv9lY8krj6KQ==
+object-property-extractor@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/object-property-extractor/-/object-property-extractor-1.0.3.tgz#856bdcfe7c15561e20307f2dfd60eded88246dc5"
+  integrity sha512-9Ky2drRY1DIgluEzDhu209cuuM7ekDFT5o1njEWmM7iO/4MSA8RXaa4pdqUNWRKCDzY9V3YQaImg2gAuzE3S+A==
 
 object.assign@^4.1.0, object.assign@^4.1.2:
   version "4.1.2"
