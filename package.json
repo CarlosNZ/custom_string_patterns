@@ -11,7 +11,7 @@
   "author": "Carl Smith <5456533+CarlosNZ@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
-    "object-property-extractor": "^1.0.2",
+    "object-property-extractor": "^1.0.3",
     "randexp": "^0.5.3"
   },
   "devDependencies": {
